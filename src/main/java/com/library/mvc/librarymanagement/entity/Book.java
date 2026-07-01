@@ -52,5 +52,5 @@ public class Book {
     private BigDecimal price;
 
     @Column(name = "Year")
-    private LocalDate year;
+    private Integer year;
 }

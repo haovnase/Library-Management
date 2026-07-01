@@ -1,0 +1,1042 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      class="light"
+      lang="vi">
+
+<head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>Manager Dashboard - Lexicon Library</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Playfair+Display:wght@600;700&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&amp;family=Playfair+Display:wght@100..900&amp;display=swap"
+        rel="stylesheet">
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "secondary-fixed": "#ffdbca",
+                        "on-error-container": "#93000a",
+                        "on-primary": "#ffffff",
+                        "tertiary-container": "#0b1c30",
+                        "surface-tint": "#565e74",
+                        "primary-fixed": "#dae2fd",
+                        "inverse-primary": "#bec6e0",
+                        "surface-container-lowest": "#ffffff",
+                        "on-background": "#191c1e",
+                        "inverse-surface": "#2d3133",
+                        "on-primary-container": "#7c839b",
+                        "outline": "#76777d",
+                        "surface": "#f7f9fb",
+                        "on-tertiary": "#ffffff",
+                        "on-secondary-container": "#682c00",
+                        "background": "#f7f9fb",
+                        "on-tertiary-fixed": "#0b1c30",
+                        "error-container": "#ffdad6",
+                        "on-secondary": "#ffffff",
+                        "surface-dim": "#d8dadc",
+                        "on-surface": "#191c1e",
+                        "on-primary-fixed-variant": "#3f465c",
+                        "primary-fixed-dim": "#bec6e0",
+                        "on-error": "#ffffff",
+                        "on-primary-fixed": "#131b2e",
+                        "surface-container-high": "#e6e8ea",
+                        "tertiary": "#000000",
+                        "surface-container-highest": "#e0e3e5",
+                        "primary": "#000000",
+                        "on-secondary-fixed": "#331200",
+                        "tertiary-fixed-dim": "#b7c8e1",
+                        "surface-variant": "#e0e3e5",
+                        "surface-container": "#eceef0",
+                        "primary-container": "#131b2e",
+                        "on-surface-variant": "#45464d",
+                        "secondary-container": "#fd8a42",
+                        "surface-bright": "#f7f9fb",
+                        "tertiary-fixed": "#d3e4fe",
+                        "surface-container-low": "#f2f4f6",
+                        "inverse-on-surface": "#eff1f3",
+                        "secondary": "#9b4500",
+                        "error": "#ba1a1a",
+                        "secondary-fixed-dim": "#ffb68e",
+                        "on-tertiary-container": "#75859d",
+                        "on-tertiary-fixed-variant": "#38485d",
+                        "on-secondary-fixed-variant": "#763300",
+                        "outline-variant": "#c6c6cd"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "unit": "8px",
+                        "container-max": "1280px",
+                        "margin-mobile": "16px",
+                        "margin-desktop": "40px",
+                        "gutter": "24px"
+                    },
+                    "fontFamily": {
+                        "headline-lg-mobile": ["Playfair Display"],
+                        "body-md": ["Inter"],
+                        "display-lg": ["Playfair Display"],
+                        "label-md": ["Inter"],
+                        "headline-md": ["Playfair Display"],
+                        "body-lg": ["Inter"],
+                        "label-sm": ["Inter"],
+                        "headline-lg": ["Playfair Display"]
+                    },
+                    "fontSize": {
+                        "headline-lg-mobile": ["28px", { "lineHeight": "36px", "fontWeight": "700" }],
+                        "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "display-lg": ["48px", { "lineHeight": "56px", "fontWeight": "700" }],
+                        "label-md": ["14px", { "lineHeight": "20px", "letterSpacing": "0.02em", "fontWeight": "600" }],
+                        "headline-md": ["24px", { "lineHeight": "32px", "fontWeight": "600" }],
+                        "body-lg": ["18px", { "lineHeight": "28px", "fontWeight": "400" }],
+                        "label-sm": ["12px", { "lineHeight": "16px", "letterSpacing": "0.04em", "fontWeight": "500" }],
+                        "headline-lg": ["32px", { "lineHeight": "40px", "fontWeight": "700" }]
+                    }
+                },
+            },
+        }
+    </script>
+    <style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #F8FAFC;
+        }
+
+        .sidebar-active {
+            border-right: 2px solid #000000;
+            font-weight: 700;
+            color: #000000;
+        }
+
+        .bento-card {
+            background: #FFFFFF;
+            border: 1px solid #E2E8F0;
+            transition: all 0.3s ease;
+        }
+
+        .bento-card:hover {
+            border-color: #000000;
+            box-shadow: 0 4px 12px rgba(15, 23, 42, 0.05);
+        }
+
+        .status-pill {
+            padding: 2px 10px;
+            border-radius: 9999px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .status-available {
+            background: #f0fdf4;
+            color: #166534;
+        }
+
+        .status-borrowed {
+            background: #f1f5f9;
+            color: #475569;
+        }
+
+        .status-reserved {
+            background: #fefce8;
+            color: #854d0e;
+        }
+
+        .status-error {
+            background: #fef2f2;
+            color: #991b1b;
+        }
+    </style>
+</head>
+
+<body class="bg-surface text-on-surface" th:data-active-tab="${activeTab}">
+    <!-- Sidebar Navigation -->
+    <aside
+        class="fixed left-0 top-0 h-screen w-64 border-r border-outline-variant bg-surface-container-low flex flex-col z-50 overflow-y-auto">
+        <div class="p-6">
+            <div class="flex items-center gap-3 mb-8">
+                <div class="w-10 h-10 bg-primary flex items-center justify-center rounded">
+                    <span class="material-symbols-outlined text-on-primary">shield</span>
+                </div>
+                <div>
+                    <h1 class="font-headline-md text-headline-md font-bold text-primary">Library Systems</h1>
+                    <p class="text-xs text-on-surface-variant tracking-wider uppercase">Management Portal</p>
+                </div>
+            </div>
+            <nav class="space-y-1">
+
+                <a href="#"
+                    class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high transition-colors text-body-md font-body-md"
+                    data-tab-target="dashboard">
+                    <span class="material-symbols-outlined">dashboard</span>
+                    <span>Dashboard</span>
+                </a>
+
+                <a href="#"
+                    class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high transition-colors text-body-md font-body-md"
+                    data-tab-target="borrow-requests">
+                    <span class="material-symbols-outlined">check_circle</span>
+                    <span>Xác nhận mượn</span>
+                </a>
+
+                <a href="#"
+                    class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high transition-colors text-body-md font-body-md"
+                    data-tab-target="return-requests">
+                    <span class="material-symbols-outlined">assignment_return</span>
+                    <span>Xác nhận trả</span>
+                </a>
+
+                <a href="#"
+                    class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high transition-colors text-body-md font-body-md"
+                    data-tab-target="add-book">
+                    <span class="material-symbols-outlined">library_add</span>
+                    <span>Thêm sách</span>
+                </a>
+
+                <a href="#"
+                    class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high transition-colors text-body-md font-body-md"
+                    data-tab-target="reports">
+                    <span class="material-symbols-outlined">analytics</span>
+                    <span>Reports</span>
+                </a>
+
+            </nav>
+        </div>
+        <div class="mt-auto p-6 space-y-4">
+
+            <div class="space-y-1">
+
+
+            </div>
+        </div>
+    </aside>
+    <!-- Main Content Area -->
+    <div class="ml-64 min-h-screen">
+        <!-- Top Navbar -->
+        <header
+            class="h-16 px-margin-desktop bg-surface border-b border-outline-variant flex justify-between items-center sticky top-0 z-40">
+
+            <div class="flex items-center gap-6 w-full justify-end">
+                <nav class="hidden md:flex gap-6">
+                </nav>
+                <div class="flex items-center gap-4">
+                    <button class="text-on-surface-variant hover:text-primary transition-opacity relative">
+                        <span class="material-symbols-outlined">notifications</span>
+                        <span class="absolute top-0 right-0 w-2 h-2 bg-secondary rounded-full"></span>
+                    </button>
+                    <button class="text-on-surface-variant hover:text-primary transition-opacity">
+                    </button>
+                    <div class="flex items-center gap-3 pl-4 border-l border-outline-variant">
+                        <div class="text-right">
+                            <p class="text-sm font-bold text-primary" th:text="${user.fullName}">Prof. Henderson</p>
+                            <p class="text-xs text-on-surface-variant"
+                                th:text="${user.role == 'manager' ? 'Quản trị viên' : 'Khách hàng'}">Quản trị viên</p>
+                            <a th:href="@{/logout}"
+                                class="text-xs font-bold text-secondary hover:underline mt-1 block">Đăng xuất</a>
+                        </div>
+                        <div
+                            class="w-10 h-10 rounded-full bg-surface-container-high flex items-center justify-center border border-outline-variant">
+                            <span class="material-symbols-outlined text-on-surface-variant">person</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+        <!-- Dashboard Body -->
+        <main class="p-margin-desktop space-y-8" data-tab-panel="dashboard" th:hidden="${activeTab!='dashboard'}">
+            <!-- Summary Metrics Section -->
+            <section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-gutter">
+                <div class="bento-card p-6 rounded-xl">
+                    <p class="text-label-sm uppercase tracking-widest text-on-surface-variant mb-2">Tổng số thành viên
+                    </p>
+                    <div class="flex items-baseline justify-between">
+                        <h3 class="text-headline-lg font-headline-lg text-primary">1.2k</h3>
+                    </div>
+                    <div class="mt-4 h-1 w-full bg-surface-container rounded-full overflow-hidden">
+                        <div class="bg-primary h-full w-[70%]"></div>
+                    </div>
+                </div>
+                <div class="bento-card p-6 rounded-xl">
+                    <p class="text-label-sm uppercase tracking-widest text-on-surface-variant mb-2">Sách đang mượn</p>
+                    <div class="flex items-baseline justify-between">
+                        <h3 class="text-headline-lg font-headline-lg text-primary">450</h3>
+                        <span class="material-symbols-outlined text-primary-container">menu_book</span>
+                    </div>
+                    <div class="mt-4 flex items-center gap-2">
+                        <span class="w-2 h-2 rounded-full bg-secondary"></span>
+                    </div>
+                </div>
+                <div class="bento-card p-6 rounded-xl border-l-4 border-l-error">
+                    <p class="text-label-sm uppercase tracking-widest text-error mb-2">Sách quá hạn</p>
+                    <div class="flex items-baseline justify-between">
+                        <h3 class="text-headline-lg font-headline-lg text-error">24</h3>
+                        <span class="material-symbols-outlined text-error">warning</span>
+                    </div>
+                    <p class="mt-4 text-xs text-on-surface-variant">Cần xử lý ngay lập tức</p>
+                </div>
+                <div class="bento-card p-6 rounded-xl">
+                    <p class="text-label-sm uppercase tracking-widest text-on-surface-variant mb-2">Nhập mới tháng này
+                    </p>
+                    <div class="flex items-baseline justify-between">
+                        <h3 class="text-headline-lg font-headline-lg text-primary">115</h3>
+                        <span class="material-symbols-outlined text-primary">new_releases</span>
+                    </div>
+                </div>
+            </section>
+            <!-- Middle Section: Trends and Alerts -->
+            <!-- Bottom Section: Recent Activity -->
+            <section class="bento-card rounded-xl overflow-hidden">
+                <div
+                    class="p-6 border-b border-outline-variant flex justify-between items-center bg-surface-container-low">
+                    <h4 class="font-headline-md text-headline-md text-primary">Hoạt động gần đây</h4>
+                    <div class="flex gap-2">
+                        <button class="p-2 rounded hover:bg-surface-container transition-colors"><span
+                                class="material-symbols-outlined">filter_list</span></button>
+                        <button class="p-2 rounded hover:bg-surface-container transition-colors"><span
+                                class="material-symbols-outlined">download</span></button>
+                    </div>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-surface-container-lowest">
+                                <th
+                                    class="px-6 py-4 text-label-sm font-bold text-on-surface-variant uppercase tracking-wider">
+                                    Thành viên</th>
+                                <th
+                                    class="px-6 py-4 text-label-sm font-bold text-on-surface-variant uppercase tracking-wider">
+                                    Hành động</th>
+                                <th
+                                    class="px-6 py-4 text-label-sm font-bold text-on-surface-variant uppercase tracking-wider">
+                                    Tài liệu</th>
+                                <th
+                                    class="px-6 py-4 text-label-sm font-bold text-on-surface-variant uppercase tracking-wider">
+                                    Thời gian</th>
+
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-outline-variant">
+                            <tr class="hover:bg-surface-container transition-colors">
+                                <td class="px-6 py-4 flex items-center gap-3">
+                                    <div
+                                        class="w-8 h-8 rounded-full bg-primary-fixed flex items-center justify-center text-primary font-bold text-xs">
+                                        A</div><span class="text-body-md font-medium">Alice Nguyen</span>
+                                </td>
+                                <td class="px-6 py-4 text-body-md">Mượn sách</td>
+                                <td class="px-6 py-4 text-body-md italic text-on-surface-variant">Digital Ethics</td>
+                                <td class="px-6 py-4 text-body-md text-on-surface-variant">10:45 AM</td>
+                            </tr>
+                            <tr class="hover:bg-surface-container transition-colors">
+                                <td class="px-6 py-4 flex items-center gap-3">
+                                    <div
+                                        class="w-8 h-8 rounded-full bg-secondary-fixed flex items-center justify-center text-secondary font-bold text-xs">
+                                        B</div><span class="text-body-md font-medium">Bob Tran</span>
+                                </td>
+                                <td class="px-6 py-4 text-body-md">Trả sách</td>
+                                <td class="px-6 py-4 text-body-md italic text-on-surface-variant">Historical Cartography
+                                </td>
+                                <td class="px-6 py-4 text-body-md text-on-surface-variant">09:12 AM</td>
+                            </tr>
+                            <tr class="hover:bg-surface-container transition-colors">
+                                <td class="px-6 py-4 flex items-center gap-3">
+                                    <div
+                                        class="w-8 h-8 rounded-full bg-tertiary-fixed flex items-center justify-center text-on-tertiary-fixed font-bold text-xs">
+                                        C</div><span class="text-body-md font-medium">Carol Le</span>
+                                </td>
+                                <td class="px-6 py-4 text-body-md">Đặt trước</td>
+                                <td class="px-6 py-4 text-body-md italic text-on-surface-variant">The Art of War</td>
+                                <td class="px-6 py-4 text-body-md text-on-surface-variant">08:30 AM</td>
+                            </tr>
+                            <tr class="hover:bg-surface-container transition-colors">
+                                <td class="px-6 py-4 flex items-center gap-3">
+                                    <div
+                                        class="w-8 h-8 rounded-full bg-primary-fixed flex items-center justify-center text-primary font-bold text-xs">
+                                        D</div><span class="text-body-md font-medium">David Vu</span>
+                                </td>
+                                <td class="px-6 py-4 text-body-md">Mượn sách</td>
+                                <td class="px-6 py-4 text-body-md italic text-on-surface-variant">Advanced Calculus</td>
+                                <td class="px-6 py-4 text-body-md text-on-surface-variant">Hôm qua</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="p-4 bg-surface-container-low text-center">
+                    <a class="text-label-md font-bold text-primary hover:underline" href="#">Xem tất cả lịch sử hoạt
+                        động</a>
+                </div>
+            </section>
+        </main>
+        <section data-tab-panel="borrow-requests" class="p-margin-desktop py-12"
+            th:hidden="${activeTab != 'borrow-requests'}">
+
+            <div class="flex-1 max-w-[900px] mx-auto w-full">
+
+                <div class="mb-10">
+                    <h2 class="font-headline-lg text-headline-lg text-primary mb-2">
+                        Xác nhận mượn sách
+                    </h2>
+                    <p class="text-on-surface-variant font-body-md">
+                        Vui lòng nhập thông tin để tạo yêu cầu mượn sách.
+                    </p>
+                </div>
+
+                <div class="bento-card rounded-xl p-8">
+
+                    <form th:action="@{/manager/borrow/check}" method="post" class="space-y-6">
+
+                        <!-- Thành viên + Sách -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+                            <div class="space-y-2">
+                                <label for="member" class="block font-label-md">
+                                    Mã thành viên
+                                </label>
+
+                                <div class="relative">
+                                    <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2">
+                                        person
+                                    </span>
+
+                                    <input id="member" name="member" type="text" placeholder="Nhập mã thành viên..."
+                                        class="w-full pl-10 pr-4 py-3 bg-surface-container-low border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-all">
+                                </div>
+                            </div>
+
+                            <div class="space-y-2">
+
+                                <label for="book" class="block font-label-md">
+                                    Mã sách
+                                </label>
+
+                                <div class="relative">
+
+                                    <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2">
+                                        book
+                                    </span>
+
+                                    <input id="book" name="book" type="text" placeholder="Nhập mã sách..."
+                                        class="w-full pl-10 pr-4 py-3 bg-surface-container-low border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-all">
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                        <!-- Hạn trả -->
+
+                        <div class="space-y-2">
+
+                            <label for="returnDate">
+                                Hạn trả dự kiến
+                            </label>
+
+                            <div class="relative">
+
+                                <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2">
+                                    event_available
+                                </span>
+
+                                <input id="returnDate" name="returnDate" type="date"
+                                    class="w-full pl-10 pr-4 py-3 bg-surface-container-low border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-all">
+
+                            </div>
+
+                        </div>
+
+                        <!-- Buttons -->
+
+                        <div class="pt-6 border-t border-outline-variant flex justify-end gap-4">
+
+                            <button type="reset" class="px-6 py-3 border rounded-lg">
+                                Hủy
+                            </button>
+
+                            <button type="submit"
+                                class="px-6 py-3 bg-secondary-container rounded-lg flex items-center gap-2">
+
+                                <span class="material-symbols-outlined">
+                                    search
+                                </span>
+
+                                Kiểm tra thông tin
+
+                            </button>
+
+                        </div>
+
+                    </form>
+
+                </div>
+
+                <!-- Kết quả kiểm tra -->
+
+                <div class="mt-8" th:if="${member != null}">
+
+                    <div class="bento-card rounded-xl p-8">
+
+                        <h3 class="text-xl font-bold text-primary mb-6">
+                            Thông tin xác nhận
+                        </h3>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+                            <div>
+                                <label class="text-sm text-on-surface-variant">
+                                    Mã khách hàng
+                                </label>
+
+                                <p class="font-bold" th:text="${member.id}">
+                                </p>
+                            </div>
+
+                            <div>
+                                <label class="text-sm text-on-surface-variant">
+                                    Họ tên
+                                </label>
+
+                                <p class="font-bold" th:text="${member.user.fullName}">
+                                </p>
+                            </div>
+
+                            <div>
+                                <label class="text-sm text-on-surface-variant">
+                                    Tên sách
+                                </label>
+
+                                <p class="font-bold" th:text="${book.bookName}">
+                                </p>
+                            </div>
+
+                            <div>
+                                <label class="text-sm text-on-surface-variant">
+                                    ISBN
+                                </label>
+
+                                <p class="font-bold" th:text="${book.isbn}">
+                                </p>
+                            </div>
+
+                            <div>
+                                <label class="text-sm text-on-surface-variant">
+                                    Tác giả
+                                </label>
+
+                                <p class="font-bold" th:text="${book.author}">
+                                </p>
+                            </div>
+
+                            <div>
+                                <label class="text-sm text-on-surface-variant">
+                                    Số lượng còn
+                                </label>
+
+                                <p class="font-bold" th:text="${book.quantity}">
+                                </p>
+                            </div>
+
+                            <div>
+                                <label class="text-sm text-on-surface-variant">
+                                    Hạn trả
+                                </label>
+
+                                <p class="font-bold text-red-600" th:text="${returnDate}">
+                                </p>
+                            </div>
+
+                            <div>
+                                <label class="text-sm text-on-surface-variant">
+                                    Trạng thái
+                                </label>
+
+                                <p class="font-bold text-green-600" th:if="${canBorrow}">
+                                    ✔ Đủ điều kiện mượn
+                                </p>
+
+                                <p class="font-bold text-red-600" th:unless="${canBorrow}">
+                                    ✘ Không đủ điều kiện
+                                </p>
+                            </div>
+
+                        </div>
+
+                        <div class="mt-8 flex justify-end">
+
+                            <form th:action="@{/manager/borrow/confirm}" method="post">
+
+                                <input type="hidden" name="member" th:value="${member.id}">
+                                <input type="hidden" name="book" th:value="${book.id}">
+                                <input type="hidden" name="returnDate" th:value="${returnDate}">
+
+                                <button type="submit" th:if="${canBorrow}"
+                                    class="px-8 py-3 bg-primary text-white rounded-lg flex items-center gap-2">
+
+                                    <span class="material-symbols-outlined">
+                                        check_circle
+                                    </span>
+
+                                    Xác nhận mượn
+
+                                </button>
+
+                            </form>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+        <section data-tab-panel="return-requests" hidden class="p-margin-desktop py-12">
+            <main class="ml-64 p-margin-desktop min-h-[calc(100vh-4rem)]">
+                <div class="max-w-4xl mx-auto space-y-8">
+                    <!-- Page Header -->
+                    <section class="space-y-2">
+                        <h2 class="font-headline-lg text-headline-lg text-primary">Xác nhận trả sách</h2>
+                        <p class="font-body-md text-on-surface-variant">Vui lòng nhập thông tin để xử lý việc trả tài
+                            liệu vào hệ thống.</p>
+                    </section>
+                    <!-- Main Processing Form -->
+                    <div class="bento-card p-8 rounded-xl">
+                        <form class="space-y-8" id="returnForm">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-gutter">
+                                <!-- Member Input -->
+                                <div class="space-y-2">
+                                    <label
+                                        class="block font-label-md text-on-surface uppercase tracking-wider text-xs">Thành
+                                        viên</label>
+                                    <div class="relative group">
+                                        <span
+                                            class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline group-focus-within:text-primary transition-colors">person</span>
+                                        <input
+                                            class="w-full h-14 pl-12 pr-4 bg-surface-container-low border border-outline-variant rounded-lg transition-all"
+                                            name="member_id" placeholder="Mã sinh viên hoặc Họ tên" type="text" />
+                                    </div>
+                                    <p class="text-label-sm text-on-surface-variant">Ví dụ: SV2023010 hoặc Nguyễn Văn A
+                                    </p>
+                                </div>
+                                <!-- Book Input -->
+                                <div class="space-y-2">
+                                    <label
+                                        class="block font-label-md text-on-surface uppercase tracking-wider text-xs">Sách</label>
+                                    <div class="relative group">
+                                        <span
+                                            class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline group-focus-within:text-primary transition-colors">book</span>
+                                        <input
+                                            class="w-full h-14 pl-12 pr-4 bg-surface-container-low border border-outline-variant rounded-lg transition-all"
+                                            name="book_id" placeholder="Mã sách hoặc Tiêu đề" type="text" />
+                                    </div>
+                                    <p class="text-label-sm text-on-surface-variant">Ví dụ: B-4029 hoặc Lịch sử triết
+                                        học</p>
+                                </div>
+                            </div>
+                            <!-- Action Buttons -->
+                            <div class="flex flex-wrap gap-4 pt-4 border-t border-outline-variant">
+                                <button
+                                    class="h-12 px-8 flex items-center gap-2 bg-surface-container-highest text-primary font-bold rounded-lg border border-outline-variant hover:bg-surface-container-high transition-all"
+                                    onclick="checkInfo()" type="button">
+                                    <span class="material-symbols-outlined">search_check</span>
+                                    Kiểm tra thông tin
+                                </button>
+                                <button
+                                    class="h-12 px-10 flex items-center gap-2 bg-primary text-on-primary font-bold rounded-lg shadow-sm hover:opacity-90 active:scale-95 transition-all"
+                                    type="submit">
+                                    <span class="material-symbols-outlined"
+                                        style="font-variation-settings: 'FILL' 1;">check_circle</span>
+                                    Xác nhận trả
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                    <!-- Status Summary Section -->
+                    <div class="hidden animate-in fade-in slide-in-from-top-4 duration-500" id="summarySection">
+                        <h3 class="font-label-md text-on-surface uppercase tracking-widest text-xs mb-4">Chi tiết giao
+                            dịch</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-gutter">
+                            <!-- Status Card 1 -->
+                            <div class="bento-card p-6 rounded-xl flex flex-col justify-between h-32">
+                                <span class="text-label-sm text-on-surface-variant">Trạng thái mượn</span>
+                                <div class="flex items-center justify-between">
+                                    <p class="font-headline-md text-primary" id="borrowCount">Đang mượn 2 cuốn</p>
+                                    <span
+                                        class="w-10 h-10 rounded-full bg-tertiary-fixed flex items-center justify-center">
+                                        <span class="material-symbols-outlined text-primary">auto_stories</span>
+                                    </span>
+                                </div>
+                            </div>
+                            <!-- Status Card 2 -->
+                            <div class="bento-card p-6 rounded-xl flex flex-col justify-between h-32">
+                                <span class="text-label-sm text-on-surface-variant">Tình trạng sách</span>
+                                <div class="flex items-center justify-between">
+                                    <p class="font-headline-md text-primary" id="bookCondition">Nguyên vẹn</p>
+                                    <span
+                                        class="px-3 py-1 bg-[#dcfce7] text-[#166534] rounded-full text-xs font-bold uppercase tracking-wider">Tốt</span>
+                                </div>
+                            </div>
+                            <!-- Status Card 3 -->
+                            <div class="bento-card p-6 rounded-xl flex flex-col justify-between h-32">
+                                <span class="text-label-sm text-on-surface-variant">Phạt quá hạn</span>
+                                <div class="flex items-center justify-between">
+                                    <p class="font-headline-md text-error" id="fineStatus">Không có</p>
+                                    <span
+                                        class="material-symbols-outlined text-on-surface-variant/30">verified_user</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Contextual Help / Info Section -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-gutter pt-8">
+                        <div
+                            class="flex gap-4 p-6 bg-surface-container-low rounded-xl border border-outline-variant/50">
+                            <span class="material-symbols-outlined text-primary text-3xl">info</span>
+                            <div>
+                                <h4 class="font-bold text-primary mb-1">Quy trình trả sách</h4>
+                                <p class="text-sm text-on-surface-variant leading-relaxed">Sau khi xác nhận, hệ thống sẽ
+                                    tự động cập nhật số lượng tồn kho và thông báo cho các độc giả đang chờ đặt chỗ cuốn
+                                    sách này.</p>
+                            </div>
+                        </div>
+                        <div
+                            class="flex gap-4 p-6 bg-surface-container-low rounded-xl border border-outline-variant/50">
+                            <span class="material-symbols-outlined text-primary text-3xl">warning</span>
+                            <div>
+                                <h4 class="font-bold text-primary mb-1">Kiểm tra hư hỏng</h4>
+                                <p class="text-sm text-on-surface-variant leading-relaxed">Trong trường hợp sách bị hư
+                                    hỏng hoặc mất trang, vui lòng ghi chú vào mục "Tình trạng sách" để hệ thống tính phí
+                                    bồi thường tương ứng.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </section>
+        <section data-tab-panel="add-book" hidden class="p-margin-desktop py-12">
+            <main class="ml-64 p-margin-desktop bg-background min-h-screen">
+                <div class="max-w-[900px] mx-auto">
+                    <!-- Breadcrumbs -->
+                    <header class="mb-10"></header>
+                    <div th:if="${successMessage}"
+                        class="mb-6 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">
+                        <span class="font-semibold">Thành công:</span> <span th:text="${successMessage}"></span>
+                    </div>
+                    <div th:if="${errorMessage}"
+                        class="mb-6 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">
+                        <span class="font-semibold">Lỗi:</span> <span th:text="${errorMessage}"></span>
+                    </div>
+                    <!-- FORM CONTAINER -->
+                    <form th:action="@{/manager/books/add}" method="post" enctype="multipart/form-data"
+                        class="space-y-gutter">
+                        <div class="grid grid-cols-1 md:grid-cols-12 gap-gutter">
+                            <!-- Left Column: Image Upload -->
+                            <div class="md:col-span-4">
+                                <label class="block text-label-md mb-4">Ảnh bìa sách</label>
+
+                                <label for="bookJacket"
+                                    class="relative group cursor-pointer border-2 border-dashed border-outline-variant rounded-xl overflow-hidden aspect-[3/4] bg-surface-container-low flex items-center justify-center hover:border-primary">
+
+                                    <!-- Placeholder -->
+                                    <div id="bookJacketPlaceholder"
+                                        class="absolute inset-0 flex flex-col items-center justify-center text-center p-6">
+                                        <span class="material-symbols-outlined text-5xl text-gray-400 mb-3">
+                                            add_photo_alternate
+                                        </span>
+
+                                        <p class="font-semibold text-lg">
+                                            Tải ảnh lên
+                                        </p>
+
+                                        <p class="text-sm text-gray-500 mt-2">
+                                            JPG, PNG (tối đa 5MB)
+                                        </p>
+                                    </div>
+
+                                    <!-- Preview -->
+                                    <img id="bookJacketPreview" src="" alt="Preview"
+                                        class="hidden absolute inset-0 w-full h-full object-cover" />
+
+                                    <!-- Input -->
+                                    <input id="bookJacket" name="bookJacket" type="file" accept="image/*" class="hidden"
+                                        required>
+                                </label>
+
+                                <p class="mt-4 text-label-sm text-on-surface-variant italic">
+                                    * Ảnh bìa chất lượng cao giúp tăng khả năng tìm kiếm và nhận diện.
+                                </p>
+                            </div>
+                            <!-- Right Column: Main Fields -->
+                            <div class="md:col-span-8 space-y-gutter">
+                                <!-- Book Title -->
+                                <div class="space-y-2">
+                                    <label class="block text-label-md text-on-surface" for="bookName">Tên sách</label>
+                                    <input
+                                        class="w-full h-12 px-4 bg-surface-container-low border border-outline-variant rounded-lg text-body-md form-input-focus transition-all"
+                                        id="bookName" name="bookName" placeholder="Nhập tên đầy đủ của tác phẩm"
+                                        type="text" required maxlength="255">
+                                </div>
+                                <!-- Author & ISBN Grid -->
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div class="space-y-2">
+                                        <label class="block text-label-md text-on-surface" for="author">Tác giả</label>
+                                        <input
+                                            class="w-full h-12 px-4 bg-surface-container-low border border-outline-variant rounded-lg text-body-md form-input-focus transition-all"
+                                            id="author" name="author" placeholder="Tên các tác giả" type="text" required
+                                            maxlength="255">
+                                    </div>
+                                    <div class="space-y-2">
+                                        <label class="block text-label-md text-on-surface" for="isbn">Mã ISBN</label>
+                                        <input
+                                            class="w-full h-12 px-4 bg-surface-container-low border border-outline-variant rounded-lg text-body-md form-input-focus transition-all"
+                                            id="isbn" name="isbn" placeholder="Số hiệu ISBN-10 hoặc 13" type="text"
+                                            required maxlength="20">
+                                    </div>
+                                </div>
+                                <!-- Category & Language -->
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div class="space-y-2">
+                                        <label class="block text-label-md text-on-surface" for="type">Danh mục</label>
+                                        <select
+                                            class="w-full h-12 px-4 bg-surface-container-low border border-outline-variant rounded-lg text-body-md form-input-focus appearance-none cursor-pointer"
+                                            id="type" name="type" required>
+                                            <option value="">Chọn một thể loại</option>
+                                            <option value="Khoa học &amp; Kỹ thuật">Khoa học &amp; Kỹ thuật</option>
+                                            <option value="Văn học cổ điển">Văn học cổ điển</option>
+                                            <option value="Triết học">Triết học</option>
+                                            <option value="Nghệ thuật &amp; Kiến trúc">Nghệ thuật &amp; Kiến trúc
+                                            </option>
+                                            <option value="Y khoa">Y khoa</option>
+                                        </select>
+                                    </div>
+                                    <div class="space-y-2">
+                                        <label class="block text-label-md text-on-surface" for="language">Ngôn
+                                            ngữ</label>
+                                        <select
+                                            class="w-full h-12 px-4 bg-surface-container-low border border-outline-variant rounded-lg text-body-md form-input-focus appearance-none cursor-pointer"
+                                            id="language" name="language" required>
+                                            <option value="Tiếng Việt">Tiếng Việt</option>
+                                            <option value="Tiếng Anh">Tiếng Anh</option>
+                                            <option value="Tiếng Pháp">Tiếng Pháp</option>
+                                            <option value="Tiếng Nhật">Tiếng Nhật</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <!-- Publisher, Year, Quantity, Location -->
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div class="space-y-2">
+                                        <label class="block text-label-md text-on-surface" for="publisher">Nhà xuất
+                                            bản</label>
+                                        <input
+                                            class="w-full h-12 px-4 bg-surface-container-low border border-outline-variant rounded-lg text-body-md form-input-focus transition-all"
+                                            id="publisher" name="publisher" placeholder="Tên nhà xuất bản" type="text"
+                                            required maxlength="255">
+                                    </div>
+                                    <div class="space-y-2">
+                                        <label class="block text-label-md text-on-surface" for="year">Năm xuất
+                                            bản</label>
+                                        <input
+                                            class="w-full h-12 px-4 bg-surface-container-low border border-outline-variant rounded-lg text-body-md form-input-focus transition-all"
+                                            id="year" name="year" placeholder="VD: 2024" type="number" required
+                                            min="1800" max="2100">
+                                    </div>
+                                </div>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div class="space-y-2">
+                                        <label class="block text-label-md text-on-surface" for="quantity">Số
+                                            lượng</label>
+                                        <input
+                                            class="w-full h-12 px-4 bg-surface-container-low border border-outline-variant rounded-lg text-body-md form-input-focus transition-all"
+                                            id="quantity" name="quantity" placeholder="VD: 10" type="number" required
+                                            min="1" max="10000">
+                                    </div>
+                                    <div class="space-y-2">
+                                        <label class="block text-label-md text-on-surface" for="location">Vị trí</label>
+                                        <input
+                                            class="w-full h-12 px-4 bg-surface-container-low border border-outline-variant rounded-lg text-body-md form-input-focus transition-all"
+                                            id="location" name="location" placeholder="VD: A-101" type="text" required
+                                            maxlength="50">
+                                    </div>
+                                </div>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div class="space-y-2">
+                                        <label class="block text-label-md text-on-surface" for="pages">Số trang</label>
+                                        <input
+                                            class="w-full h-12 px-4 bg-surface-container-low border border-outline-variant rounded-lg text-body-md form-input-focus transition-all"
+                                            id="pages" name="pages" placeholder="VD: 320" type="number" required min="1"
+                                            max="5000">
+                                    </div>
+                                    <div class="space-y-2"></div>
+                                </div>
+                                <!-- Description -->
+                                <div class="space-y-2">
+                                    <label class="block text-label-md text-on-surface" for="description">Tóm tắt nội
+                                        dung</label>
+                                    <textarea
+                                        class="w-full px-4 py-3 bg-surface-container-low border border-outline-variant rounded-lg text-body-md form-input-focus transition-all resize-none"
+                                        id="description" name="description"
+                                        placeholder="Mô tả ngắn gọn về chủ đề và nội dung chính của cuốn sách..."
+                                        rows="5" required maxlength="2000"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- FORM ACTIONS -->
+                        <div
+                            class="flex items-center justify-end space-x-4 pt-10 border-t border-outline-variant mt-10">
+                            <button
+                                class="px-8 h-12 border border-primary text-secondary font-semibold rounded-lg hover:bg-surface-container-high transition-colors tracking-wide"
+                                type="button">
+                                Hủy
+                            </button>
+                            <button
+                                class="px-10 h-12 bg-primary text-on-primary font-semibold rounded-lg hover:opacity-90 transition-opacity flex items-center tracking-wide"
+                                type="submit">
+                                <span class="material-symbols-outlined mr-2">save</span>
+                                Lưu sách
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </main>
+        </section>
+        <section data-tab-panel="reports" hidden class="p-margin-desktop py-12">
+            <div class="bento-card rounded-xl p-8">
+                <h2 class="font-headline-md text-headline-md text-primary mb-2">Reports</h2>
+                <p class="text-on-surface-variant">Báo cáo thống kê và dữ liệu sẽ hiển thị tại đây.</p>
+            </div>
+        </section>
+    </div>
+    <!-- Micro-interactions Script -->
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+
+            // =========================
+            // GET ACTIVE TAB FROM BACKEND
+            // =========================
+            const sidebarLinks = document.querySelectorAll("aside nav a[data-tab-target]");
+            const tabPanels = document.querySelectorAll("[data-tab-panel]");
+
+            // activeTab từ backend
+            let activeTab = document.body.dataset.activeTab;
+
+            // nếu backend không truyền thì lấy tab đầu tiên
+            if (!activeTab && sidebarLinks.length > 0) {
+                activeTab = sidebarLinks[0].dataset.tabTarget;
+            }
+
+            function switchTab(tabName) {
+
+                // sidebar
+                sidebarLinks.forEach(link => {
+                    if (link.dataset.tabTarget === tabName) {
+                        link.classList.add("sidebar-active");
+                        link.classList.remove("text-on-surface-variant");
+                    } else {
+                        link.classList.remove("sidebar-active");
+                        link.classList.add("text-on-surface-variant");
+                    }
+                });
+
+                // panel
+                tabPanels.forEach(panel => {
+                    panel.hidden = panel.dataset.tabPanel !== tabName;
+                });
+            }
+
+            // click
+            sidebarLinks.forEach(link => {
+                link.addEventListener("click", function (e) {
+                    e.preventDefault();
+                    switchTab(link.dataset.tabTarget);
+                });
+            });
+
+            // init
+            switchTab(activeTab);
+
+
+            // =========================
+            // BOOK JACKET PREVIEW
+            // =========================
+            const input = document.getElementById("bookJacket");
+            const preview = document.getElementById("bookJacketPreview");
+            const placeholder = document.getElementById("bookJacketPlaceholder");
+
+            if (input && preview && placeholder) {
+                input.addEventListener("change", function () {
+
+                    const file = this.files[0];
+                    if (!file) return;
+
+                    if (!file.type.startsWith("image/")) {
+                        alert("Vui lòng chọn file ảnh.");
+                        return;
+                    }
+
+                    const reader = new FileReader();
+
+                    reader.onload = function (e) {
+                        preview.src = e.target.result;
+                        preview.classList.remove("hidden");
+                        placeholder.classList.add("hidden");
+                    };
+
+                    reader.readAsDataURL(file);
+                });
+            }
+
+
+            // =========================
+            // SIDEBAR HOVER EFFECT
+            // =========================
+            document.querySelectorAll('aside nav a').forEach(item => {
+                item.addEventListener('mouseenter', () => {
+                    item.style.transform = 'translateX(4px)';
+                });
+
+                item.addEventListener('mouseleave', () => {
+                    item.style.transform = 'translateX(0)';
+                });
+            });
+
+
+            // =========================
+            // SEARCH FOCUS EFFECT
+            // =========================
+            const searchInput = document.querySelector('input[type="text"]');
+
+            if (searchInput) {
+                searchInput.addEventListener('focus', () => {
+                    searchInput.parentElement.classList.add('ring-2', 'ring-primary');
+                });
+
+                searchInput.addEventListener('blur', () => {
+                    searchInput.parentElement.classList.remove('ring-2', 'ring-primary');
+                });
+            }
+
+        });
+    </script>
+
+
+
+
+</body>
+
+</html>
