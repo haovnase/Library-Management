@@ -1,8 +1,13 @@
 package com.library.mvc.librarymanagement.controller;
 
 import com.library.mvc.librarymanagement.entity.Book;
+import com.library.mvc.librarymanagement.entity.BorrowBook;
+import com.library.mvc.librarymanagement.entity.Customer;
 import com.library.mvc.librarymanagement.entity.User;
 import com.library.mvc.librarymanagement.repository.BookRepository;
+import com.library.mvc.librarymanagement.repository.BorrowBookRepository;
+import com.library.mvc.librarymanagement.repository.CustomerRepository;
+import com.library.mvc.librarymanagement.repository.UserRepository;
 
 import jakarta.servlet.http.HttpSession;
 import jakarta.websocket.Session;
@@ -11,22 +16,32 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.SessionAttribute;
 import org.springframework.web.bind.annotation.SessionAttributes;
 
 import java.util.List;
+import java.util.Optional;
+
 @SessionAttributes({
-    "keyword"
+        "keyword"
 })
 @Controller
 
 public class HomeController {
 
     private final BookRepository bookRepository;
+    private final BorrowBookRepository borrowBookRepository;
+    private final CustomerRepository customerRepository;
+    private final UserRepository userRepository;
 
-    public HomeController(BookRepository bookRepository) {
+    public HomeController(BookRepository bookRepository, BorrowBookRepository borrowBookRepository,
+            CustomerRepository customerRepository, UserRepository userRepository) {
         this.bookRepository = bookRepository;
+        this.borrowBookRepository = borrowBookRepository;
+        this.customerRepository = customerRepository;
+        this.userRepository = userRepository;
     }
 
     @GetMapping("/")
@@ -105,7 +120,118 @@ public class HomeController {
         return "bookdetail"; // book-detail.html
     }
 
-    
+    @GetMapping("/borrow")
+    public String borrowBook(Model model, HttpSession session) {
+        User user = (User) session.getAttribute("user");
+        if (user == null) {
+            return "redirect:/login";
+        }
+        Customer customer = customerRepository.findByUserId(user.getId());
+        List<BorrowBook> borrowList = borrowBookRepository.findByCustomer(customer);
+        borrowList.forEach(b -> {
+            if (b.getReturnDate() != null) {
+                b.setStatus("Returned");
+            } else if (b.getDeadline().isBefore(java.time.LocalDate.now())) {
+                b.setStatus("Overdue");
+            } else {
+                b.setStatus("Borrowing");
+            }
+        });
+        model.addAttribute("borrowList", borrowList);
+        model.addAttribute("user", user);
+        return "myborrow"; // myborrow.html
+    }
 
+    @GetMapping("/borrow/renew/{id}")
+    public String renewBorrow(@PathVariable String id, Model model, HttpSession session) {
+
+        // xử lý
+        BorrowBook borrowBook = borrowBookRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Borrow not found: " + id));
+        borrowBook.setDeadline(borrowBook.getDeadline().plusDays(7));
+        borrowBook.setDelay(borrowBook.getDelay() + 7);
+        borrowBookRepository.save(borrowBook);
+        return "redirect:/borrow";
+    }
+
+    @GetMapping("/manager/members/add")
+    public String showAddMemberForm(Model model, HttpSession session) {
+        User currentUser = (User) session.getAttribute("user");
+        if (currentUser == null) {
+            return "redirect:/login";
+        }
+
+        model.addAttribute("user", currentUser);
+        model.addAttribute("activeTab", "add-member");
+        return "manager/dashboard";
+    }
+
+    @PostMapping("/manager/members/add")
+    public String addMember(
+            @RequestParam String fullName,
+            @RequestParam String username,
+            @RequestParam String password,
+            @RequestParam(required = false) String phone,
+            Model model,
+            HttpSession session) {
+
+        User currentUser = (User) session.getAttribute("user");
+        if (currentUser == null) {
+            return "redirect:/login";
+        }
+
+        model.addAttribute("user", currentUser);
+        model.addAttribute("activeTab", "add-member");
+
+        try {
+            // Kiểm tra username đã tồn tại chưa
+            if (userRepository.existsByUsername(username)) {
+                model.addAttribute("errorMessage", "Tên đăng nhập đã tồn tại.");
+                return "manager/dashboard";
+            }
+
+            // Sinh UserID mới, VD: U005
+            String newUserId = generateNextId("U", userRepository.findAll()
+                    .stream().map(User::getId).toList());
+
+            User newUser = new User();
+            newUser.setId(newUserId);
+            newUser.setUsername(username);
+            newUser.setPassword(password); // TODO: nên mã hoá bằng PasswordEncoder trước khi lưu
+            newUser.setRole("customer"); // mặc định
+            newUser.setFullName(fullName);
+            newUser.setStatus("active"); // mặc định
+            userRepository.save(newUser);
+
+            // Sinh CustomerID mới, VD: C004
+            String newCustomerId = generateNextId("C", customerRepository.findAll()
+                    .stream().map(Customer::getId).toList());
+
+            Customer customer = new Customer();
+            customer.setId(newCustomerId);
+            customer.setUser(newUser);
+            customer.setPhone(phone);
+            customerRepository.save(customer);
+
+            model.addAttribute("successMessage", "Thêm thành viên thành công.");
+            return "manager/dashboard";
+
+        } catch (Exception e) {
+            model.addAttribute("errorMessage", "Có lỗi xảy ra: " + e.getMessage());
+            return "manager/dashboard";
+        }
+    }
+
+    // Sinh ID tự tăng dạng U001, C001...
+    private String generateNextId(String prefix, java.util.List<String> existingIds) {
+        int max = existingIds.stream()
+                .filter(id -> id.startsWith(prefix))
+                .map(id -> id.substring(prefix.length()))
+                .filter(num -> num.matches("\\d+"))
+                .mapToInt(Integer::parseInt)
+                .max()
+                .orElse(0);
+        return String.format("%s%03d", prefix, max + 1);
+    }
 
 }

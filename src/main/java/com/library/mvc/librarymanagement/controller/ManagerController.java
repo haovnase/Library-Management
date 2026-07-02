@@ -247,6 +247,7 @@ public class ManagerController {
         borrow.setStatus("Borrowing");
         borrow.setDescription("");
         borrow.setFine(0);
+        borrow.setDelay(0);
 
         borrowBookRepository.save(borrow);
 

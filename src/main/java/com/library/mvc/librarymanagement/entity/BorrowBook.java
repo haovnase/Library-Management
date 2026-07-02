@@ -46,4 +46,7 @@ public class BorrowBook {
 
     @Column(name = "Fine")
     private double fine;
+
+    @Column(name = "Delay")
+    private Integer delay;
 }

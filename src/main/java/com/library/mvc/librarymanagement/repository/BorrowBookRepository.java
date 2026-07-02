@@ -5,6 +5,7 @@ import com.library.mvc.librarymanagement.entity.Customer;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
@@ -19,4 +20,8 @@ public interface BorrowBookRepository extends JpaRepository<BorrowBook, String> 
     Object countByStatusAndDeadlineBefore(String string, LocalDate now);
 
     List<BorrowBook> findTop10ByOrderByBorrowDateDesc();
+
+    List<BorrowBook> findByCustomer(Customer customer);
+
+    
 }

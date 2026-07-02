@@ -209,9 +209,9 @@
 
                 <a href="#"
                     class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high transition-colors text-body-md font-body-md"
-                    data-tab-target="reports">
+                    data-tab-target="add-member">
                     <span class="material-symbols-outlined">analytics</span>
-                    <span>Reports</span>
+                    <span>Thêm Thành Viên</span>
                 </a>
 
             </nav>
@@ -352,8 +352,7 @@
                         </thead>
                         <tbody class="divide-y divide-outline-variant">
 
-                            <tr th:each="b, iterStat : ${borrow}"
-                                class="hover:bg-surface-container transition-colors">
+                            <tr th:each="b, iterStat : ${borrow}" class="hover:bg-surface-container transition-colors">
 
                                 <!-- MEMBER -->
                                 <td class="px-6 py-4 flex items-center gap-3">
@@ -876,7 +875,7 @@
                                             maxlength="50">
                                     </div>
                                 </div>
-                                
+
                                 <!-- Description -->
                                 <div class="space-y-2">
                                     <label class="block text-label-md text-on-surface" for="description">Tóm tắt nội
@@ -908,11 +907,77 @@
                 </div>
             </main>
         </section>
-        <section data-tab-panel="reports" hidden class="p-margin-desktop py-12">
-            <div class="bento-card rounded-xl p-8">
-                <h2 class="font-headline-md text-headline-md text-primary mb-2">Reports</h2>
-                <p class="text-on-surface-variant">Báo cáo thống kê và dữ liệu sẽ hiển thị tại đây.</p>
-            </div>
+        <section data-tab-panel="add-member" hidden class="p-margin-desktop py-12">
+            <main class="ml-64 p-margin-desktop bg-background min-h-screen">
+                <div class="max-w-[700px] mx-auto">
+                    <!-- Breadcrumbs -->
+                    <header class="mb-10"></header>
+
+                    <div th:if="${successMessage}"
+                        class="mb-6 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">
+                        <span class="font-semibold">Thành công:</span> <span th:text="${successMessage}"></span>
+                    </div>
+                    <div th:if="${errorMessage}"
+                        class="mb-6 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">
+                        <span class="font-semibold">Lỗi:</span> <span th:text="${errorMessage}"></span>
+                    </div>
+
+                    <!-- FORM CONTAINER -->
+                    <form th:action="@{/manager/members/add}" method="post" class="space-y-gutter">
+
+                        <!-- Full Name -->
+                        <div class="space-y-2">
+                            <label class="block text-label-md text-on-surface" for="fullName">Họ và tên</label>
+                            <input
+                                class="w-full h-12 px-4 bg-surface-container-low border border-outline-variant rounded-lg text-body-md form-input-focus transition-all"
+                                id="fullName" name="fullName" placeholder="Nhập họ tên đầy đủ" type="text" required
+                                maxlength="100">
+                        </div>
+
+                        <!-- Username & Password Grid -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="space-y-2">
+                                <label class="block text-label-md text-on-surface" for="username">Tên đăng nhập</label>
+                                <input
+                                    class="w-full h-12 px-4 bg-surface-container-low border border-outline-variant rounded-lg text-body-md form-input-focus transition-all"
+                                    id="username" name="username" placeholder="Tên đăng nhập duy nhất" type="text"
+                                    required maxlength="50">
+                            </div>
+                            <div class="space-y-2">
+                                <label class="block text-label-md text-on-surface" for="password">Mật khẩu</label>
+                                <input
+                                    class="w-full h-12 px-4 bg-surface-container-low border border-outline-variant rounded-lg text-body-md form-input-focus transition-all"
+                                    id="password" name="password" placeholder="Mật khẩu đăng nhập" type="password"
+                                    required minlength="6">
+                            </div>
+                        </div>
+
+                        <!-- Phone -->
+                        <div class="space-y-2">
+                            <label class="block text-label-md text-on-surface" for="phone">Số điện thoại</label>
+                            <input
+                                class="w-full h-12 px-4 bg-surface-container-low border border-outline-variant rounded-lg text-body-md form-input-focus transition-all"
+                                id="phone" name="phone" placeholder="VD: 0901234567" type="tel" maxlength="15">
+                        </div>
+
+                        <!-- FORM ACTIONS -->
+                        <div
+                            class="flex items-center justify-end space-x-4 pt-10 border-t border-outline-variant mt-10">
+                            <button
+                                class="px-8 h-12 border border-primary text-secondary font-semibold rounded-lg hover:bg-surface-container-high transition-colors tracking-wide"
+                                type="reset">
+                                Hủy
+                            </button>
+                            <button
+                                class="px-10 h-12 bg-primary text-on-primary font-semibold rounded-lg hover:opacity-90 transition-opacity flex items-center tracking-wide"
+                                type="submit">
+                                <span class="material-symbols-outlined mr-2">save</span>
+                                Lưu thành viên
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </main>
         </section>
     </div>
     <!-- Micro-interactions Script -->
