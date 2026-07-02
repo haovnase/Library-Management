@@ -45,5 +45,5 @@ public class BorrowBook {
     private String description;
 
     @Column(name = "Fine")
-    private BigDecimal fine;
+    private double fine;
 }

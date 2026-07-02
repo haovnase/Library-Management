@@ -1,12 +1,12 @@
 <!DOCTYPE html>
 
 <html xmlns:th="http://www.thymeleaf.org" class="scroll-smooth" lang="vi"
-    style="width: 1280px; height: 2395px; overflow: hidden; position: relative;">
+    style="width: 1280px; height: 900px; position: relative;">
 
 <head>
     <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-    <title>Thư viện Lexicon | Trang chủ</title>
+    <title>Thư viện Lexicon | Trang Detail</title>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <link
         href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Roboto:wght@400;500;700&amp;display=swap"
@@ -129,6 +129,22 @@
             <div class="flex items-center gap-10">
                 <span class="font-display-lg text-headline-md text-primary tracking-tight">Lexicon Library</span>
             </div>
+            <form class="hidden md:flex flex-1 max-w-xl relative" action="/books/search" method="get">
+
+                <span
+                    class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant">
+                    search
+                </span>
+
+                <input name="keyword"
+                    class="w-full h-[56px] bg-[#F1F5F9] border-none rounded-lg pl-12 pr-4 focus:ring-2 focus:ring-primary focus:bg-white transition-all text-body-md"
+                    placeholder="Tìm kiếm sách, tác giả, ISBN..." th:value="${keyword}" type="text" />
+
+                <button type="submit"
+                    class="absolute right-2 top-2 bottom-2 px-6 bg-primary text-on-primary font-label-md hover:bg-zinc-800 transition-colors rounded-md">
+                    Tìm
+                </button>
+            </form>
             <div class="flex items-center gap-6">
                 <button
                     class="material-symbols-outlined text-on-surface-variant hover:text-primary transition-colors">notifications</button>
@@ -164,88 +180,124 @@
             </div>
         </div>
     </nav>
-    <main class="pt-20">
-        <!-- Streamlined Hero Section -->
-        <section class="relative py-24 flex items-center justify-center bg-surface-container-low overflow-hidden">
-            <div class="relative z-10 w-full max-w-2xl px-margin-mobile text-center">
-                <h1 class="font-display-lg text-display-lg text-primary mb-8">Cổng vào Tri thức</h1>
-                <form class="relative mt-2" method="get" action="/books/search">
-                    <input name="keyword"
-                        class="w-full h-14 pl-6 pr-32 bg-white border border-outline-variant text-body-lg focus:ring-1 focus:ring-primary focus:border-primary transition-all outline-none"
-                        placeholder="Tìm kiếm sách, tạp chí và bài viết..." type="text" />
+    <main class="pt-20 mt-24 max-w-container-max mx-auto px-margin-desktop py-12">
 
-                    <button type="submit"
-                        class="absolute right-2 top-2 bottom-2 px-8 bg-primary text-on-primary font-label-md hover:bg-zinc-800 transition-colors">
-                        Tìm kiếm
-                    </button>
-                </form>
-                <div class="mt-6 flex flex-wrap gap-4 justify-center">
-                    <span class="text-label-sm text-on-surface-variant/70 uppercase tracking-widest">Xu hướng:</span>
-                    <a class="text-label-sm text-on-surface-variant hover:text-primary underline underline-offset-4"
-                        href="#">Quantum Mechanics</a>
-                    <a class="text-label-sm text-on-surface-variant hover:text-primary underline underline-offset-4"
-                        href="#">Modern Literature</a>
-                    <a class="text-label-sm text-on-surface-variant hover:text-primary underline underline-offset-4"
-                        href="#">UX Design</a>
+        <!-- Breadcrumb -->
+        <nav class="mb-8 flex items-center gap-2 text-on-surface-variant">
+            <a class="font-label-sm hover:text-primary" href="/">Trang chủ</a>
+            <span class="material-symbols-outlined text-[16px]">chevron_right</span>
+            <a class="font-label-sm hover:text-primary" th:href="@{/books/search(keyword=${keyword})}">Kết quả tìm kiếm</a>
+            <span class="material-symbols-outlined text-[16px]">chevron_right</span>
+            <span class="font-label-sm text-primary font-semibold" th:text="${book.bookName}"></span>
+        </nav>
+
+        <!-- PRIMARY -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start mb-16">
+
+            <!-- COVER -->
+            <div class="lg:col-span-4 flex justify-center">
+                <div class="rounded-lg overflow-hidden aspect-[2/3] w-full max-w-[400px] border border-outline-variant">
+                    <img class="w-full h-full object-cover" th:src="@{${book.bookJacket}}" alt="book cover" />
                 </div>
             </div>
-        </section>
-        <!-- Quick Stats - Simplified -->
-        <section class="max-w-container-max mx-auto px-margin-desktop py-12 border-b border-outline-variant">
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-12">
-                <div class="text-center md:text-left" th:each="stat : ${stats}">
-                    <p class="text-headline-lg font-display-lg text-primary" th:text="${stat.value}">1.2M+</p>
-                    <p class="text-label-sm text-on-surface-variant uppercase tracking-widest mt-1"
-                        th:text="${stat.label}">Tổng số sách</p>
+
+            <!-- INFO -->
+            <div class="lg:col-span-8 space-y-6">
+
+                <div class="space-y-2">
+
+                    <span class="bg-[#e8f5e9] text-[#2e7d32] px-3 py-1 rounded-full font-label-md text-label-sm">
+                        SẴN CÓ
+                    </span>
+
+                    <h1 class="text-headline-lg font-extrabold" th:text="${book.bookName}"></h1>
+
+                    <p class="text-on-surface-variant font-medium" th:text="${book.author}"></p>
+                </div>
+
+                <!-- META -->
+                <div class="flex flex-wrap gap-8 py-6 border-y border-outline-variant">
+
+                    <div class="flex flex-col">
+                        <span class="text-label-sm uppercase text-on-surface-variant">Năm xuất bản</span>
+                        <span class="font-bold" th:text="${book.year}"></span>
+                    </div>
+
+                    <div class="flex flex-col">
+                        <span class="text-label-sm uppercase text-on-surface-variant">Thể loại</span>
+                        <span class="font-bold" th:text="${book.type}"></span>
+                    </div>
+
+                    <div class="flex flex-col">
+                        <span class="text-label-sm uppercase text-on-surface-variant">ISBN</span>
+                        <span class="font-bold" th:text="${book.isbn}"></span>
+                    </div>
+
+                </div>
+
+                <!-- ACTION -->
+                <button class="flex-1 border-2 border-primary text-primary py-4 rounded">
+                    Thêm vào yêu thích
+                </button>
+
+            </div>
+        </div>
+
+        <!-- SECONDARY -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-12">
+
+            <!-- DESCRIPTION -->
+            <div class="lg:col-span-7 space-y-8">
+
+                <section>
+                    <h2 class="text-primary font-bold border-l-4 border-secondary pl-4 mb-6">
+                        Tóm tắt nội dung
+                    </h2>
+
+                    <p class="text-on-surface-variant leading-relaxed" th:text="${book.description}">
+                    </p>
+                </section>
+            </div>
+
+            <!-- DETAIL TABLE -->
+            <div class="lg:col-span-5">
+
+                <div class="p-8 rounded-lg border border-outline-variant">
+
+                    <h3 class="font-bold mb-6">Thông tin chi tiết</h3>
+
+                    <div class="space-y-4">
+
+                        <div class="flex justify-between border-b py-3">
+                            <span>Nhà xuất bản</span>
+                            <span th:text="${book.publisher}"></span>
+                        </div>
+
+                        <div class="flex justify-between border-b py-3">
+                            <span>Ngôn ngữ</span>
+                            <span th:text="${book.language}"></span>
+                        </div>
+
+                        <div class="flex justify-between border-b py-3">
+                            <span>ISBN</span>
+                            <span th:text="${book.isbn}"></span>
+                        </div>
+
+                        <div class="flex justify-between border-b py-3">
+                            <span>Vị trí</span>
+                            <span th:text="${book.location}"></span>
+                        </div>
+
+                        <div class="flex justify-between border-b py-3">
+                            <span>Số lượng</span>
+                            <span th:text="${book.quantity}"></span>
+                        </div>
+
+                    </div>
                 </div>
             </div>
-        </section>
-        <!-- Footer -->
-        <footer class="bg-white border-t border-outline-variant py-20">
-            <div class="max-w-container-max mx-auto px-margin-desktop">
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-20">
-                    <div class="lg:col-span-2">
-                        <span class="font-display-lg text-headline-md text-primary block mb-6">Thư viện Định chế
-                            Lexicon</span>
-                        <p class="text-on-surface-variant max-w-sm leading-relaxed">
-                            Cung cấp quyền truy cập toàn cầu vào các bộ sưu tập tài liệu học thuật và tài sản kỹ thuật
-                            số tốt nhất thế giới.
-                        </p>
-                    </div>
-                    <div>
-                        <h5 class="font-label-md uppercase tracking-widest text-primary mb-6">Liên kết nhanh</h5>
-                        <ul class="space-y-3">
-                            <li class=""><a class="text-on-surface-variant hover:text-primary transition-colors"
-                                    href="#">Danh mục số</a></li>
-                            <li class=""><a class="text-on-surface-variant hover:text-primary transition-colors"
-                                    href="#">Hướng dẫn nghiên cứu</a></li>
-                            <li class=""><a class="text-on-surface-variant hover:text-primary transition-colors"
-                                    href="#">Không gian &amp; Đặt chỗ</a></li>
-                        </ul>
-                    </div>
-                    <div>
-                        <h5 class="font-label-md uppercase tracking-widest text-primary mb-6">Hỗ trợ</h5>
-                        <ul class="space-y-3">
-                            <li class=""><a class="text-on-surface-variant hover:text-primary transition-colors"
-                                    href="#">Trung tâm trợ giúp</a></li>
-                            <li class=""><a class="text-on-surface-variant hover:text-primary transition-colors"
-                                    href="#">Khả năng tiếp cận</a></li>
-                            <li class=""><a class="text-on-surface-variant hover:text-primary transition-colors"
-                                    href="#">Bàn tiếp tân</a></li>
-                        </ul>
-                    </div>
-                </div>
-                <div
-                    class="flex flex-col md:flex-row justify-between items-center gap-6 pt-10 border-t border-outline-variant text-label-sm text-on-surface-variant/60 uppercase tracking-widest">
-                    <p class="">© 2024 THƯ VIỆN ĐỊNH CHẾ LEXICON. BẢO LƯU MỌI QUYỀN.</p>
-                    <div class="flex gap-8">
-                        <a class="hover:text-primary transition-colors" href="#">Bảo mật</a>
-                        <a class="hover:text-primary transition-colors" href="#">Điều khoản</a>
-                        <a class="hover:text-primary transition-colors" href="#">Sơ đồ trang web</a>
-                    </div>
-                </div>
-            </div>
-        </footer>
+
+        </div>
     </main>
     <!-- Minimal FAB -->
     <div class="fixed bottom-10 right-10 z-40">

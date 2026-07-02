@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.SessionAttribute;
+import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -25,8 +26,18 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.List;
 
 @Controller
+@SessionAttributes({
+    "totalMembers",
+    "booksBorrowing",
+    "overdueBooks",
+    "newBooksThisMonth",
+    "borrow"
+})
 public class ManagerController {
 
     private final BookRepository bookRepository;
@@ -48,9 +59,19 @@ public class ManagerController {
         }
 
         model.addAttribute("user", user);
-        if(!model.containsAttribute("activeTab")) {
+        if (!model.containsAttribute("activeTab")) {
             model.addAttribute("activeTab", "dashboard");
         }
+        model.addAttribute("totalMembers", customerRepository.count());
+        model.addAttribute("booksBorrowing", borrowBookRepository.countByStatus("Borrowing"));
+        model.addAttribute("overdueBooks", borrowBookRepository.countByStatusAndDeadlineBefore("Borrowing", LocalDate.now()));
+        model.addAttribute("newBooksThisMonth", 34);
+        List<BorrowBook> borrowBooks =
+                borrowBookRepository.findTop10ByOrderByBorrowDateDesc();
+
+        model.addAttribute("borrow", borrowBooks);
+
+
         return "manager/dashboard";
     }
 
@@ -65,7 +86,6 @@ public class ManagerController {
             @RequestParam("publisher") String publisher,
             @RequestParam("quantity") Integer quantity,
             @RequestParam("location") String location,
-            @RequestParam(value = "pages", required = false) Integer pages,
             @RequestParam("description") String description,
             @RequestParam(value = "bookJacket", required = false) MultipartFile bookJacket,
             RedirectAttributes redirectAttributes) {
@@ -104,9 +124,7 @@ public class ManagerController {
         if (year == null || year < 1800 || year > LocalDate.now().getYear() + 1) {
             errorMessage.append("Năm xuất bản phải từ 1800 đến năm hiện tại + 1. ");
         }
-        if (pages == null || pages <= 0 || pages > 5000) {
-            errorMessage.append("Số trang phải nằm trong khoảng 1 đến 5000. ");
-        }
+        
         if (description == null || description.trim().isEmpty()) {
             errorMessage.append("Tóm tắt nội dung không được để trống. ");
         }
@@ -150,6 +168,7 @@ public class ManagerController {
 
         bookRepository.save(book);
         redirectAttributes.addFlashAttribute("successMessage", "Thêm sách thành công!");
+        redirectAttributes.addFlashAttribute("activeTab", "add-book");
         return "redirect:/manager/dashboard";
     }
 
@@ -189,12 +208,8 @@ public class ManagerController {
         model.addAttribute("returnDate", returnDate);
         model.addAttribute("canBorrow", canBorrow);
         model.addAttribute("message", message);
-        model.addAttribute("activetTab", "borrow-requests");
-        System.out.println("Member: " + member);
-        System.out.println("canBorrow = " + canBorrow);
-        System.out.println("Book: " + book);
-        System.out.println("Customer: " + customer);
-        System.out.println("BookEntity: " + bookEntity);
+        model.addAttribute("activeTab", "borrow-requests");
+
         return "manager/dashboard";
     }
 
@@ -215,7 +230,7 @@ public class ManagerController {
 
         if (customer == null || bookEntity == null || bookEntity.getQuantity() <= 0) {
             redirectAttributes.addFlashAttribute("errorMessage", "Không thể mượn sách.");
-            redirectAttributes.addFlashAttribute("activetTab", "borrow-requests");
+            redirectAttributes.addFlashAttribute("activeTab", "borrow-requests");
             return "redirect:/manager/dashboard";
         }
 
@@ -231,7 +246,7 @@ public class ManagerController {
         borrow.setQuantity(1);
         borrow.setStatus("Borrowing");
         borrow.setDescription("");
-        borrow.setFine(BigDecimal.ZERO);
+        borrow.setFine(0);
 
         borrowBookRepository.save(borrow);
 
@@ -239,8 +254,81 @@ public class ManagerController {
         bookRepository.save(bookEntity);
 
         redirectAttributes.addFlashAttribute("successMessage", "Mượn sách thành công.");
-        redirectAttributes.addFlashAttribute("activeTab","borrow-requests");
+        redirectAttributes.addFlashAttribute("activeTab", "borrow-requests");
         return "redirect:/manager/dashboard";
+    }
+
+    @PostMapping("/manager/return/check")
+    public String checkReturn(@RequestParam("userId") String CustomeID, Model model, User user) {
+
+        // xử lý tìm user
+        Customer customer = customerRepository.findById(CustomeID).orElse(null);
+        
+        model.addAttribute("customer", customer);
+        model.addAttribute("user", user);
+        if (customer == null) {
+            model.addAttribute("activeTab", "return-requests");
+            
+            model.addAttribute("errorMessage", "Không tìm thấy khách hàng.");
+            return "/manager/dashboard";
+        }
+        List<BorrowBook> borrowBooks = borrowBookRepository.findByCustomerAndStatus(customer, "Borrowing");
+        borrowBooks.forEach(b -> {
+            LocalDate dueDate = b.getDeadline();
+            LocalDate today = LocalDate.now();
+            long daysLate = ChronoUnit.DAYS.between(dueDate, today);
+
+            double fine = daysLate > 0 ? daysLate * 5000 : 0;
+
+            b.setFine(fine); // chỉ set để hiển thị UI, không cần lưu DB
+        });
+        model.addAttribute("borrowBooks", borrowBooks);
+        model.addAttribute("activeTab", "return-requests");
+        
+        return "/manager/dashboard";
+    }
+
+    @PostMapping("/manager/return/confirm")
+    public String confirmReturn(@RequestParam("borrowId") String borrowId, Model model, User user) {
+
+        BorrowBook b = borrowBookRepository.findById(borrowId).orElse(null);
+
+        if (b != null) {
+            LocalDate dueDate = b.getDeadline();
+            LocalDate today = LocalDate.now();
+            long daysLate = ChronoUnit.DAYS.between(dueDate, today);
+
+            double fine = daysLate > 0 ? daysLate * 5000 : 0;
+
+            b.setFine(fine);
+            b.setReturnDate(today);
+            b.setStatus("Returned");
+            borrowBookRepository.save(b);
+            Book book = b.getBook();
+            book.setQuantity(book.getQuantity() + 1);
+            bookRepository.save(book);
+        }
+        Customer customer = b.getCustomer();
+        model.addAttribute("customer", customer);
+        if (customer == null) {
+            model.addAttribute("activeTab", "return-requests");
+            model.addAttribute("errorMessage", "Không tìm thấy khách hàng.");
+            return "/manager/dashboard";
+        }
+        List<BorrowBook> borrowBooks = borrowBookRepository.findByCustomerAndStatus(customer, "Borrowing");
+        borrowBooks.forEach(a -> {
+            LocalDate dueDate = a.getDeadline();
+            LocalDate today = LocalDate.now();
+            long daysLate = ChronoUnit.DAYS.between(dueDate, today);
+
+            double fine = daysLate > 0 ? daysLate * 5000 : 0;
+
+            a.setFine(fine); // chỉ set để hiển thị UI, không cần lưu DB
+        });
+        model.addAttribute("borrowBooks", borrowBooks);
+        model.addAttribute("activeTab", "return-requests");
+        model.addAttribute("user", user);
+        return "/manager/dashboard";
     }
 
 }

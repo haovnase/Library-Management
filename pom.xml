@@ -71,12 +71,7 @@
         </dependency>
 
         <!-- H2 for local development when MySQL credentials are unavailable -->
-        <dependency>
-            <groupId>com.h2database</groupId>
-            <artifactId>h2</artifactId>
-            <scope>runtime</scope>
-        </dependency>
-
+       
         <!-- Lombok -->
         <dependency>
             <groupId>org.projectlombok</groupId>
