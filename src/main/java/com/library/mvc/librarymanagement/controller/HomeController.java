@@ -8,6 +8,10 @@ import com.library.mvc.librarymanagement.repository.BookRepository;
 import com.library.mvc.librarymanagement.repository.BorrowBookRepository;
 import com.library.mvc.librarymanagement.repository.CustomerRepository;
 import com.library.mvc.librarymanagement.repository.UserRepository;
+import com.library.mvc.librarymanagement.service.BookService;
+import com.library.mvc.librarymanagement.service.BorrowBookService;
+import com.library.mvc.librarymanagement.service.CustomerService;
+import com.library.mvc.librarymanagement.service.UserService;
 
 import jakarta.servlet.http.HttpSession;
 import jakarta.websocket.Session;
@@ -21,31 +25,33 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.SessionAttribute;
 import org.springframework.web.bind.annotation.SessionAttributes;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
-@SessionAttributes({
-        "keyword"
-})
+@SessionAttributes("keyword")
 @Controller
-
 public class HomeController {
 
-    private final BookRepository bookRepository;
-    private final BorrowBookRepository borrowBookRepository;
-    private final CustomerRepository customerRepository;
-    private final UserRepository userRepository;
+    private final BookService bookService;
+    private final BorrowBookService borrowBookService;
+    private final CustomerService customerService;
+    private final UserService userService;
 
-    public HomeController(BookRepository bookRepository, BorrowBookRepository borrowBookRepository,
-            CustomerRepository customerRepository, UserRepository userRepository) {
-        this.bookRepository = bookRepository;
-        this.borrowBookRepository = borrowBookRepository;
-        this.customerRepository = customerRepository;
-        this.userRepository = userRepository;
+    public HomeController(BookService bookService,
+            BorrowBookService borrowBookService,
+            CustomerService customerService,
+            UserService userService) {
+        this.bookService = bookService;
+        this.borrowBookService = borrowBookService;
+        this.customerService = customerService;
+        this.userService = userService;
     }
 
     @GetMapping("/")
-    public String home(@SessionAttribute(name = "user", required = false) User user, Model model) {
+    public String home(@SessionAttribute(name = "user", required = false) User user,
+            Model model) {
+
         if (user != null) {
             model.addAttribute("user", user);
         }
@@ -85,84 +91,97 @@ public class HomeController {
     private record Stat(String value, String label) {
     }
 
-    private record BookItem(String title, String author, String image, String actionLabel, String status) {
+    private record BookItem(String title,
+            String author,
+            String image,
+            String actionLabel,
+            String status) {
     }
 
-    private record Category(String icon, String name) {
+    private record Category(String icon,
+            String name) {
     }
 
     @GetMapping("/books/search")
-    public String searchBooks(@RequestParam("keyword") String keyword, Model model, HttpSession session) {
-        List<Book> books;
-        if (keyword == null || keyword.isBlank()) {
-            books = bookRepository.findAll();
-        } else {
-            books = bookRepository
-                    .findByBookNameContainingIgnoreCaseOrAuthorContainingIgnoreCaseOrIsbnContainingIgnoreCase(keyword,
-                            keyword, keyword);
-        }
-        model.addAttribute("user", model.getAttribute("user"));
+    public String searchBooks(@RequestParam("keyword") String keyword,
+            Model model,
+            HttpSession session) {
+
+        List<Book> books = bookService.search(keyword);
+
+        model.addAttribute("user", session.getAttribute("user"));
         model.addAttribute("books", books);
+
         session.setAttribute("keyword", keyword);
         model.addAttribute("keyword", keyword);
+
         return "search";
     }
 
     @GetMapping("/books/{id}")
-    public String viewBookDetail(@PathVariable String id, Model model, HttpSession session) {
+    public String viewBookDetail(@PathVariable String id,
+            Model model,
+            HttpSession session) {
 
-        Book book = bookRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Book not found: " + id));
+        Book book = bookService.findById(id);
 
         model.addAttribute("book", book);
         model.addAttribute("keyword", session.getAttribute("keyword"));
-        model.addAttribute("user", model.getAttribute("user"));
-        return "bookdetail"; // book-detail.html
+        model.addAttribute("user", session.getAttribute("user"));
+
+        return "bookdetail";
     }
 
     @GetMapping("/borrow")
     public String borrowBook(Model model, HttpSession session) {
+
         User user = (User) session.getAttribute("user");
+
         if (user == null) {
             return "redirect:/login";
         }
-        Customer customer = customerRepository.findByUserId(user.getId());
-        List<BorrowBook> borrowList = borrowBookRepository.findByCustomer(customer);
+
+        Customer customer = customerService.findByUserId(user.getId());
+
+        List<BorrowBook> borrowList = borrowBookService.findByCustomer(customer);
+
         borrowList.forEach(b -> {
             if (b.getReturnDate() != null) {
                 b.setStatus("Returned");
-            } else if (b.getDeadline().isBefore(java.time.LocalDate.now())) {
+            } else if (b.getDeadline().isBefore(LocalDate.now())) {
                 b.setStatus("Overdue");
             } else {
                 b.setStatus("Borrowing");
             }
         });
+
         model.addAttribute("borrowList", borrowList);
         model.addAttribute("user", user);
-        return "myborrow"; // myborrow.html
+
+        return "myborrow";
     }
 
     @GetMapping("/borrow/renew/{id}")
-    public String renewBorrow(@PathVariable String id, Model model, HttpSession session) {
+    public String renewBorrow(@PathVariable String id) {
 
-        // xử lý
-        BorrowBook borrowBook = borrowBookRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Borrow not found: " + id));
-        borrowBook.setDeadline(borrowBook.getDeadline().plusDays(7));
-        borrowBook.setDelay(borrowBook.getDelay() + 7);
-        borrowBookRepository.save(borrowBook);
+        borrowBookService.renewBorrow(id);
+
         return "redirect:/borrow";
     }
 
     @GetMapping("/manager/members/add")
-    public String showAddMemberForm(Model model, HttpSession session) {
+    public String showAddMemberForm(Model model,
+            HttpSession session) {
+
         User currentUser = (User) session.getAttribute("user");
+
         if (currentUser == null) {
             return "redirect:/login";
         }
 
         model.addAttribute("user", currentUser);
         model.addAttribute("activeTab", "add-member");
+
         return "manager/dashboard";
     }
 
@@ -176,6 +195,7 @@ public class HomeController {
             HttpSession session) {
 
         User currentUser = (User) session.getAttribute("user");
+
         if (currentUser == null) {
             return "redirect:/login";
         }
@@ -184,54 +204,39 @@ public class HomeController {
         model.addAttribute("activeTab", "add-member");
 
         try {
-            // Kiểm tra username đã tồn tại chưa
-            if (userRepository.existsByUsername(username)) {
-                model.addAttribute("errorMessage", "Tên đăng nhập đã tồn tại.");
+
+            if (userService.existsByUsername(username)) {
+                model.addAttribute("errorMessage",
+                        "Tên đăng nhập đã tồn tại.");
                 return "manager/dashboard";
             }
 
-            // Sinh UserID mới, VD: U005
-            String newUserId = generateNextId("U", userRepository.findAll()
-                    .stream().map(User::getId).toList());
-
             User newUser = new User();
-            newUser.setId(newUserId);
+            newUser.setId(userService.generateNextUserId());
             newUser.setUsername(username);
-            newUser.setPassword(password); // TODO: nên mã hoá bằng PasswordEncoder trước khi lưu
-            newUser.setRole("customer"); // mặc định
+            newUser.setPassword(password);
+            newUser.setRole("customer");
             newUser.setFullName(fullName);
-            newUser.setStatus("active"); // mặc định
-            userRepository.save(newUser);
+            newUser.setStatus("active");
 
-            // Sinh CustomerID mới, VD: C004
-            String newCustomerId = generateNextId("C", customerRepository.findAll()
-                    .stream().map(Customer::getId).toList());
+            newUser = userService.save(newUser);
 
             Customer customer = new Customer();
-            customer.setId(newCustomerId);
+            customer.setId(customerService.generateNextCustomerId());
             customer.setUser(newUser);
             customer.setPhone(phone);
-            customerRepository.save(customer);
 
-            model.addAttribute("successMessage", "Thêm thành viên thành công.");
-            return "manager/dashboard";
+            customerService.save(customer);
+
+            model.addAttribute("successMessage",
+                    "Thêm thành viên thành công.");
 
         } catch (Exception e) {
-            model.addAttribute("errorMessage", "Có lỗi xảy ra: " + e.getMessage());
-            return "manager/dashboard";
+
+            model.addAttribute("errorMessage",
+                    "Có lỗi xảy ra: " + e.getMessage());
         }
-    }
 
-    // Sinh ID tự tăng dạng U001, C001...
-    private String generateNextId(String prefix, java.util.List<String> existingIds) {
-        int max = existingIds.stream()
-                .filter(id -> id.startsWith(prefix))
-                .map(id -> id.substring(prefix.length()))
-                .filter(num -> num.matches("\\d+"))
-                .mapToInt(Integer::parseInt)
-                .max()
-                .orElse(0);
-        return String.format("%s%03d", prefix, max + 1);
+        return "manager/dashboard";
     }
-
 }

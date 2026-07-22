@@ -2,6 +2,8 @@ package com.library.mvc.librarymanagement.controller;
 
 import com.library.mvc.librarymanagement.entity.User;
 import com.library.mvc.librarymanagement.repository.UserRepository;
+import com.library.mvc.librarymanagement.service.UserService;
+
 import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -14,38 +16,44 @@ import java.util.Optional;
 @Controller
 public class LoginController {
 
-    private final UserRepository userRepository;
+    private final UserService userService;
 
-    public LoginController(UserRepository userRepository) {
-        this.userRepository = userRepository;
+    public LoginController(UserService userService) {
+        this.userService = userService;
     }
 
     @GetMapping("/login")
-    public String loginPage(@RequestParam(value = "error", required = false) String error,
-                            Model model) {
+    public String loginPage(
+            @RequestParam(value = "error", required = false) String error,
+            Model model) {
+
         if (error != null) {
-            model.addAttribute("errorMessage", "Mã thành viên hoặc mật khẩu không đúng.");
+            model.addAttribute("errorMessage",
+                    "Mã thành viên hoặc mật khẩu không đúng.");
         }
+
         return "login";
     }
 
     @PostMapping("/login")
-    public String handleLogin(@RequestParam("member-id") String memberId,
-                               @RequestParam String password,
-                               HttpSession session,
-                               Model model) {
-        Optional<User> user = userRepository.findByUsernameAndPassword(memberId, password);
+    public String handleLogin(
+            @RequestParam("member-id") String memberId,
+            @RequestParam String password,
+            HttpSession session) {
 
-        if (user.isPresent() && "customer".equalsIgnoreCase(user.get().getRole())) {
+        Optional<User> user = userService.login(memberId, password);
+
+        if (user.isPresent()) {
+
             session.setAttribute("user", user.get());
+
+            if ("manager".equalsIgnoreCase(user.get().getRole())) {
+                return "redirect:/manager/dashboard";
+            }
+
             return "redirect:/";
         }
-        if (user.isPresent() && "manager".equalsIgnoreCase(user.get().getRole())) {
-            session.setAttribute("user", user.get());
-            return "redirect:/manager/dashboard";
-        }
 
-        model.addAttribute("errorMessage", "Mã thành viên hoặc mật khẩu không đúng.");
         return "redirect:/login?error=true";
     }
 
