@@ -47,6 +47,10 @@ public class LoginController {
 
             session.setAttribute("user", user.get());
 
+            if ("admin".equalsIgnoreCase(user.get().getRole())) {
+                return "redirect:/admin/dashboard";
+            }
+
             if ("manager".equalsIgnoreCase(user.get().getRole())) {
                 return "redirect:/manager/dashboard";
             }
