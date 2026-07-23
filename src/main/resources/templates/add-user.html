@@ -36,7 +36,10 @@
             <td>
 
                 <input type="text"
-                       th:field="*{username}">
+                       th:field="*{username}"
+                       minlength="4"
+                       maxlength="20"
+                       required>
 
             </td>
 
@@ -59,7 +62,9 @@
             <td>
 
                 <input type="password"
-                       th:field="*{password}">
+                       th:field="*{password}"
+                       minlength="6"
+                       required>
 
             </td>
 
@@ -82,7 +87,10 @@
             <td>
 
                 <input type="text"
-                       th:field="*{fullName}">
+                       th:field="*{fullName}"
+                       minlength="5"
+                       maxlength="50"
+                       required>
 
             </td>
 

@@ -91,10 +91,10 @@
         <td th:text="${u.status}"></td>
 
         <td>
-            <a
-                    th:href="@{/admin/users/edit/{id}(id=${u.id})}">
 
-                Edit
+            th:href="@{/admin/users/edit/{id}(id=${u.id})}">
+
+            Edit
 
             </a>
 
@@ -103,7 +103,8 @@
             <form
                     th:if="${u.status=='active'}"
                     th:action="@{/admin/users/lock}"
-                    method="post">
+                    method="post"
+                    onsubmit="return confirm('Bạn chắc chắn muốn khoá user này?');">
 
                 <input
                         type="hidden"
@@ -121,7 +122,8 @@
             <form
                     th:if="${u.status=='locked'}"
                     th:action="@{/admin/users/unlock}"
-                    method="post">
+                    method="post"
+                    onsubmit="return confirm('Bạn chắc chắn muốn mở khoá user này?');">
 
                 <input
                         type="hidden"
@@ -140,7 +142,8 @@
 
             <form
                     th:action="@{/admin/users/change-role}"
-                    method="post">
+                    method="post"
+                    onsubmit="return confirm('Bạn chắc chắn muốn đổi quyền user này?');">
 
                 <input
                         type="hidden"
@@ -179,26 +182,6 @@
                 <button type="submit">
 
                     Change
-
-                </button>
-
-            </form>
-
-            <br>
-
-            <form
-                    th:action="@{/admin/users/delete}"
-                    method="post">
-
-                <input
-                        type="hidden"
-                        name="id"
-                        th:value="${u.id}">
-
-                <button
-                        type="submit">
-
-                    Delete
 
                 </button>
 
