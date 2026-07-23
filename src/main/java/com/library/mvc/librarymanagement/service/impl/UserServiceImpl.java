@@ -71,6 +71,32 @@ public class UserServiceImpl implements UserService {
         }
     }
 
+    @Override
+    public boolean existsByUsernameExceptId(String username, String id) {
+
+        Optional<User> user = userRepository.findByUsername(username);
+
+        if (user.isEmpty()) {
+            return false;
+        }
+
+        return !user.get().getId().equals(id);
+    }
+
+    @Override
+    public User createUser(User user) {
+
+        return userRepository.save(user);
+
+    }
+
+    @Override
+    public User updateUser(User user) {
+
+        return userRepository.save(user);
+
+    }
+
 
 
 }

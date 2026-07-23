@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <title>Add User</title>
+
+</head>
+
+<body>
+
+<h2>Add New User</h2>
+
+<hr>
+
+<a th:href="@{/admin/users}">
+
+    Back to User Management
+
+</a>
+
+<hr>
+
+<form th:action="@{/admin/users/add}"
+      th:object="${userDTO}"
+      method="post">
+
+    <table>
+
+        <tr>
+
+            <td>Username</td>
+
+            <td>
+
+                <input type="text"
+                       th:field="*{username}">
+
+            </td>
+
+            <td>
+
+            <span
+                    th:if="${#fields.hasErrors('username')}"
+                    th:errors="*{username}">
+
+            </span>
+
+            </td>
+
+        </tr>
+
+        <tr>
+
+            <td>Password</td>
+
+            <td>
+
+                <input type="password"
+                       th:field="*{password}">
+
+            </td>
+
+            <td>
+
+            <span
+                    th:if="${#fields.hasErrors('password')}"
+                    th:errors="*{password}">
+
+            </span>
+
+            </td>
+
+        </tr>
+
+        <tr>
+
+            <td>Full Name</td>
+
+            <td>
+
+                <input type="text"
+                       th:field="*{fullName}">
+
+            </td>
+
+            <td>
+
+            <span
+                    th:if="${#fields.hasErrors('fullName')}"
+                    th:errors="*{fullName}">
+
+            </span>
+
+            </td>
+
+        </tr>
+
+        <tr>
+
+            <td>Role</td>
+
+            <td>
+
+                <select th:field="*{role}">
+
+                    <option value="">-- Select Role --</option>
+
+                    <option value="admin">Admin</option>
+
+                    <option value="manager">Manager</option>
+
+                    <option value="customer">Customer</option>
+
+                </select>
+
+            </td>
+
+            <td>
+
+            <span th:if="${#fields.hasErrors('role')}"
+                  th:errors="*{role}">
+
+            </span>
+
+            </td>
+
+        </tr>
+
+        <tr>
+
+            <td>Status</td>
+
+            <td>
+
+                <select th:field="*{status}">
+
+                    <option value="">-- Select Status --</option>
+
+                    <option value="active">Active</option>
+
+                    <option value="locked">Locked</option>
+
+                </select>
+
+            </td>
+
+            <td>
+
+            <span th:if="${#fields.hasErrors('status')}"
+                  th:errors="*{status}">
+
+            </span>
+
+            </td>
+
+        </tr>
+
+        <tr>
+
+            <td colspan="3">
+
+                <button type="submit">
+
+                    Save
+
+                </button>
+
+                <a th:href="@{/admin/users}">
+
+                    Cancel
+
+                </a>
+
+            </td>
+
+        </tr>
+
+    </table>
+
+</form>
+
+</body>
+
+</html>

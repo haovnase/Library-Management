@@ -23,5 +23,11 @@ public interface UserService {
 
     void lockUser(String id);
 
+    boolean existsByUsernameExceptId(String username, String id);
+
+    User createUser(User user);
+
+    User updateUser(User user);
+
 
 }
