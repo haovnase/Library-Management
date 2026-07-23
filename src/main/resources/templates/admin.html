@@ -2,8 +2,11 @@
 <html xmlns:th="http://www.thymeleaf.org">
 
 <head>
+
     <meta charset="UTF-8">
+
     <title>Admin Dashboard</title>
+
 </head>
 
 <body>
@@ -12,247 +15,201 @@
 
 <hr>
 
+<h2>Admin Dashboard</h2>
+
 <p>
-    Welcome:
+
+    Welcome
+
     <b th:text="${user.fullName}"></b>
+
 </p>
-
-<p>
-    Role:
-    <b th:text="${user.role}"></b>
-</p>
-
-<hr>
-
-<a th:href="@{/admin/dashboard}">
-    Dashboard
-</a>
-
-|
-
-<a th:href="@{/admin/users}">
-    User Management
-</a>
-
-|
 
 <a th:href="@{/logout}">
+
     Logout
+
 </a>
 
 <hr>
 
-<div th:if="${activeTab=='dashboard'}">
+<h2>User Management</h2>
 
-    <h2>Dashboard</h2>
+<form th:action="@{/admin/users/search}" method="get">
 
-    <table border="1">
+    <input
+            type="text"
+            name="keyword"
+            th:value="${keyword}"
+            placeholder="Search username">
 
-        <tr>
+    <button type="submit">
 
-            <th>Information</th>
+        Search
 
-            <th>Value</th>
+    </button>
 
-        </tr>
+</form>
 
-        <tr>
+<br>
 
-            <td>Total Users</td>
+<a th:href="@{/admin/users/add}">
 
-            <td>20</td>
+    Add User
 
-        </tr>
+</a>
 
-        <tr>
+<hr>
+<table border="1">
 
-            <td>Total Books</td>
+    <tr>
 
-            <td>350</td>
+        <th>ID</th>
 
-        </tr>
+        <th>Username</th>
 
-        <tr>
+        <th>Full Name</th>
 
-            <td>Total Borrow</td>
+        <th>Role</th>
 
-            <td>70</td>
+        <th>Status</th>
 
-        </tr>
+        <th>Action</th>
 
-        <tr>
+    </tr>
 
-            <td>Overdue Books</td>
+    <tr th:each="u : ${users}">
 
-            <td>5</td>
+        <td th:text="${u.id}"></td>
 
-        </tr>
+        <td th:text="${u.username}"></td>
 
-    </table>
+        <td th:text="${u.fullName}"></td>
 
-</div>
+        <td th:text="${u.role}"></td>
 
-<div th:if="${activeTab=='users'}">
+        <td th:text="${u.status}"></td>
 
-    <h2>User Management</h2>
+        <td>
+            <a
+                    th:href="@{/admin/users/edit/{id}(id=${u.id})}">
 
-    <hr>
+                Edit
 
-    <form th:action="@{/admin/users/search}" method="get">
+            </a>
 
-        Search Username :
+            <br><br>
 
-        <input
-                type="text"
-                name="keyword"
-                th:value="${keyword}">
+            <form
+                    th:if="${u.status=='active'}"
+                    th:action="@{/admin/users/lock}"
+                    method="post">
 
-        <button type="submit">
+                <input
+                        type="hidden"
+                        name="id"
+                        th:value="${u.id}">
 
-            Search
+                <button type="submit">
 
-        </button>
+                    Lock
 
-        <a th:href="@{/admin/users}">
+                </button>
 
-            Show All
+            </form>
 
-        </a>
+            <form
+                    th:if="${u.status=='locked'}"
+                    th:action="@{/admin/users/unlock}"
+                    method="post">
 
-    </form>
+                <input
+                        type="hidden"
+                        name="id"
+                        th:value="${u.id}">
 
-    <br>
+                <button type="submit">
 
-    <table border="1">
+                    Unlock
 
-        <tr>
+                </button>
 
-            <th>User ID</th>
+            </form>
 
-            <th>Username</th>
+            <br>
 
-            <th>Full Name</th>
+            <form
+                    th:action="@{/admin/users/change-role}"
+                    method="post">
 
-            <th>Role</th>
+                <input
+                        type="hidden"
+                        name="id"
+                        th:value="${u.id}">
 
-            <th>Status</th>
+                <select
+                        name="role">
 
-            <th>Action</th>
+                    <option
+                            value="admin"
+                            th:selected="${u.role=='admin'}">
 
-        </tr>
+                        Admin
 
-        <tr th:each="u : ${users}">
+                    </option>
 
-            <td th:text="${u.id}"></td>
+                    <option
+                            value="manager"
+                            th:selected="${u.role=='manager'}">
 
-            <td th:text="${u.username}"></td>
+                        Manager
 
-            <td th:text="${u.fullName}"></td>
+                    </option>
 
-            <td th:text="${u.role}"></td>
+                    <option
+                            value="customer"
+                            th:selected="${u.role=='customer'}">
 
-            <td th:text="${u.status}"></td>
+                        Customer
 
-            <td>
+                    </option>
 
-                <form th:if="${u.status == 'active'}"
-                      th:action="@{/admin/users/lock}"
-                      method="post">
+                </select>
 
-                    <input type="hidden"
-                           name="id"
-                           th:value="${u.id}">
+                <button type="submit">
 
-                    <button type="submit">
+                    Change
 
-                        Lock
+                </button>
 
-                    </button>
+            </form>
 
-                </form>
+            <br>
 
-                <br>
+            <form
+                    th:action="@{/admin/users/delete}"
+                    method="post">
 
-                <form th:if="${u.status == 'locked'}"
-                      th:action="@{/admin/users/unlock}"
-                      method="post">
+                <input
+                        type="hidden"
+                        name="id"
+                        th:value="${u.id}">
 
-                    <input type="hidden"
-                           name="id"
-                           th:value="${u.id}">
+                <button
+                        type="submit">
 
-                    <button type="submit">
+                    Delete
 
-                        Unlock
+                </button>
 
-                    </button>
+            </form>
 
-                </form>
+        </td>
 
-                <br>
+    </tr>
 
-                <form th:action="@{/admin/users/change-role}"
-                      method="post">
+</table>
 
-                    <input type="hidden"
-                           name="id"
-                           th:value="${u.id}">
+</body>
 
-                    <select name="role">
-
-                        <option value="admin"
-                                th:selected="${u.role=='admin'}">
-
-                            Admin
-
-                        </option>
-
-                        <option value="manager"
-                                th:selected="${u.role=='manager'}">
-
-                            Manager
-
-                        </option>
-
-                        <option value="customer"
-                                th:selected="${u.role=='customer'}">
-
-                            Customer
-
-                        </option>
-
-                    </select>
-
-                    <button type="submit">
-
-                        Save
-
-                    </button>
-
-                </form>
-
-                <br>
-
-                <form th:action="@{/admin/users/delete}"
-                      method="post">
-
-                    <input type="hidden"
-                           name="id"
-                           th:value="${u.id}">
-
-                    <button type="submit"
-                            onclick="return confirm('Delete this user?')">
-
-                        Delete
-
-                    </button>
-
-                </form>
-
-            </td>
-
-        </tr>
-
-    </table>
-
-</div>
+</html>
