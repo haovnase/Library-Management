@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Dashboard</title>
+</head>
+
+<body>
+
+<h1>Library Management System</h1>
+
+<hr>
+
+<p>
+    Welcome:
+    <b th:text="${user.fullName}"></b>
+</p>
+
+<p>
+    Role:
+    <b th:text="${user.role}"></b>
+</p>
+
+<hr>
+
+<a th:href="@{/admin/dashboard}">
+    Dashboard
+</a>
+
+|
+
+<a th:href="@{/admin/users}">
+    User Management
+</a>
+
+|
+
+<a th:href="@{/logout}">
+    Logout
+</a>
+
+<hr>
+
+<div th:if="${activeTab=='dashboard'}">
+
+    <h2>Dashboard</h2>
+
+    <table border="1">
+
+        <tr>
+
+            <th>Information</th>
+
+            <th>Value</th>
+
+        </tr>
+
+        <tr>
+
+            <td>Total Users</td>
+
+            <td>20</td>
+
+        </tr>
+
+        <tr>
+
+            <td>Total Books</td>
+
+            <td>350</td>
+
+        </tr>
+
+        <tr>
+
+            <td>Total Borrow</td>
+
+            <td>70</td>
+
+        </tr>
+
+        <tr>
+
+            <td>Overdue Books</td>
+
+            <td>5</td>
+
+        </tr>
+
+    </table>
+
+</div>
+
+<div th:if="${activeTab=='users'}">
+
+    <h2>User Management</h2>
+
+    <hr>
+
+    <form th:action="@{/admin/users/search}" method="get">
+
+        Search Username :
+
+        <input
+                type="text"
+                name="keyword"
+                th:value="${keyword}">
+
+        <button type="submit">
+
+            Search
+
+        </button>
+
+        <a th:href="@{/admin/users}">
+
+            Show All
+
+        </a>
+
+    </form>
+
+    <br>
+
+    <table border="1">
+
+        <tr>
+
+            <th>User ID</th>
+
+            <th>Username</th>
+
+            <th>Full Name</th>
+
+            <th>Role</th>
+
+            <th>Status</th>
+
+            <th>Action</th>
+
+        </tr>
+
+        <tr th:each="u : ${users}">
+
+            <td th:text="${u.id}"></td>
+
+            <td th:text="${u.username}"></td>
+
+            <td th:text="${u.fullName}"></td>
+
+            <td th:text="${u.role}"></td>
+
+            <td th:text="${u.status}"></td>
+
+            <td>
+
+                <form th:if="${u.status == 'active'}"
+                      th:action="@{/admin/users/lock}"
+                      method="post">
+
+                    <input type="hidden"
+                           name="id"
+                           th:value="${u.id}">
+
+                    <button type="submit">
+
+                        Lock
+
+                    </button>
+
+                </form>
+
+                <br>
+
+                <form th:if="${u.status == 'locked'}"
+                      th:action="@{/admin/users/unlock}"
+                      method="post">
+
+                    <input type="hidden"
+                           name="id"
+                           th:value="${u.id}">
+
+                    <button type="submit">
+
+                        Unlock
+
+                    </button>
+
+                </form>
+
+                <br>
+
+                <form th:action="@{/admin/users/change-role}"
+                      method="post">
+
+                    <input type="hidden"
+                           name="id"
+                           th:value="${u.id}">
+
+                    <select name="role">
+
+                        <option value="admin"
+                                th:selected="${u.role=='admin'}">
+
+                            Admin
+
+                        </option>
+
+                        <option value="manager"
+                                th:selected="${u.role=='manager'}">
+
+                            Manager
+
+                        </option>
+
+                        <option value="customer"
+                                th:selected="${u.role=='customer'}">
+
+                            Customer
+
+                        </option>
+
+                    </select>
+
+                    <button type="submit">
+
+                        Save
+
+                    </button>
+
+                </form>
+
+                <br>
+
+                <form th:action="@{/admin/users/delete}"
+                      method="post">
+
+                    <input type="hidden"
+                           name="id"
+                           th:value="${u.id}">
+
+                    <button type="submit"
+                            onclick="return confirm('Delete this user?')">
+
+                        Delete
+
+                    </button>
+
+                </form>
+
+            </td>
+
+        </tr>
+
+    </table>
+
+</div>

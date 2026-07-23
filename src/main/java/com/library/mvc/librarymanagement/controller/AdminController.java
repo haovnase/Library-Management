@@ -35,7 +35,7 @@ public class AdminController
         model.addAttribute("user", currentUser);
         model.addAttribute("activeTab", "dashboard");
 
-        return "admin/dashboard";
+        return "admin";
     }
 
     @GetMapping("/users")
@@ -57,7 +57,7 @@ public class AdminController
         model.addAttribute("users", users);
         model.addAttribute("activeTab", "users");
 
-        return "admin/dashboard";
+        return "admin";
     }
 
     @GetMapping("/users/search")
@@ -82,7 +82,7 @@ public class AdminController
         model.addAttribute("keyword", keyword);
         model.addAttribute("activeTab", "users");
 
-        return "admin/dashboard";
+        return "admin";
     }
 
     @PostMapping("/users/lock")
