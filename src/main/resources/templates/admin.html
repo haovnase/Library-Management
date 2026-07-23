@@ -7,6 +7,24 @@
 
     <title>Admin Dashboard</title>
 
+    <style>
+        .btn-edit {
+            display: inline-block;
+            padding: 4px 10px;
+            background-color: #f0f0f0;
+            border: 1px solid #999;
+            border-radius: 3px;
+            color: #000;
+            text-decoration: none;
+            cursor: pointer;
+            font: inherit;
+        }
+
+        .btn-edit:hover {
+            background-color: #e0e0e0;
+        }
+    </style>
+
 </head>
 
 <body>
@@ -92,7 +110,7 @@
 
         <td>
 
-            <a th:href="@{/admin/users/edit/{id}(id=${u.id})}">
+            <a class="btn-edit" th:href="@{/admin/users/edit/{id}(id=${u.id})}">
 
                 Edit
 
