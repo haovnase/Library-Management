@@ -1,237 +1,80 @@
-<!DOCTYPE html><html class="light" lang="vi" style=""><head>
-<meta charset="utf-8">
-<meta content="width=device-width, initial-scale=1.0" name="viewport">
-<title>Đăng nhập | Lexicon Library</title>
-<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
-<script id="tailwind-config">
-      tailwind.config = {
-        darkMode: "class",
-        theme: {
-          extend: {
-            "colors": {
-                    "on-secondary": "#ffffff",
-                    "on-background": "#191c1e",
-                    "primary-fixed": "#dae2fd",
-                    "primary-container": "#131b2e",
-                    "on-primary": "#ffffff",
-                    "inverse-primary": "#bec6e0",
-                    "surface-container": "#eceef0",
-                    "tertiary-fixed-dim": "#b7c8e1",
-                    "tertiary": "#000000",
-                    "inverse-surface": "#2d3133",
-                    "surface-container-high": "#e6e8ea",
-                    "on-primary-fixed": "#131b2e",
-                    "surface-bright": "#f7f9fb",
-                    "outline": "#76777d",
-                    "on-surface": "#191c1e",
-                    "on-primary-container": "#7c839b",
-                    "surface-tint": "#565e74",
-                    "on-primary-fixed-variant": "#3f465c",
-                    "background": "#f7f9fb",
-                    "surface-variant": "#e0e3e5",
-                    "on-secondary-container": "#682c00",
-                    "surface-dim": "#d8dadc",
-                    "on-secondary-fixed": "#331200",
-                    "surface-container-low": "#f2f4f6",
-                    "surface": "#f7f9fb",
-                    "secondary-fixed": "#ffdbca",
-                    "on-tertiary": "#ffffff",
-                    "on-error": "#ffffff",
-                    "error-container": "#ffdad6",
-                    "surface-container-lowest": "#ffffff",
-                    "tertiary-fixed": "#d3e4fe",
-                    "on-secondary-fixed-variant": "#763300",
-                    "error": "#ba1a1a",
-                    "secondary": "#9b4500",
-                    "primary-fixed-dim": "#bec6e0",
-                    "inverse-on-surface": "#eff1f3",
-                    "surface-container-highest": "#e0e3e5",
-                    "secondary-fixed-dim": "#ffb68e",
-                    "on-tertiary-container": "#75859d",
-                    "on-surface-variant": "#45464d",
-                    "secondary-container": "#fd8a42",
-                    "tertiary-container": "#0b1c30",
-                    "on-error-container": "#93000a",
-                    "on-tertiary-fixed": "#0b1c30",
-                    "primary": "#000000",
-                    "on-tertiary-fixed-variant": "#38485d",
-                    "outline-variant": "#c6c6cd"
-            },
-            "borderRadius": {
-                    "DEFAULT": "0.125rem",
-                    "lg": "0.25rem",
-                    "xl": "0.5rem",
-                    "full": "0.75rem"
-            },
-            "spacing": {
-                    "unit": "8px",
-                    "gutter": "24px",
-                    "margin-desktop": "40px",
-                    "margin-mobile": "16px",
-                    "container-max": "1280px"
-            },
-            "fontFamily": {
-                    "label-sm": ["Inter", "sans-serif"],
-                    "label-md": ["Inter", "sans-serif"],
-                    "headline-lg-mobile": ["Inter", "sans-serif"],
-                    "headline-md": ["Inter", "sans-serif"],
-                    "headline-lg": ["Inter", "sans-serif"],
-                    "display-lg": ["Inter", "sans-serif"],
-                    "body-md": ["Inter", "sans-serif"],
-                    "body-lg": ["Inter", "sans-serif"]
-            },
-            "fontSize": {
-                    "label-sm": ["12px", {"lineHeight": "16px", "letterSpacing": "0.04em", "fontWeight": "500"}],
-                    "label-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.02em", "fontWeight": "600"}],
-                    "headline-lg-mobile": ["28px", {"lineHeight": "36px", "fontWeight": "700"}],
-                    "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
-                    "headline-lg": ["32px", {"lineHeight": "40px", "fontWeight": "700"}],
-                    "display-lg": ["48px", {"lineHeight": "56px", "fontWeight": "700"}],
-                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
-                    "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}]
-            }
-          },
-        },
-      }
-    </script>
-<style>
-      .material-symbols-outlined {
-        font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
-        display: inline-block;
-        vertical-align: middle;
-      }
-      .academic-gradient {
-        background: linear-gradient(135deg, #f7f9fb 0%, #eceef0 100%);
-      }
-      .glass-card {
-        background: rgba(255, 255, 255, 0.95);
-        backdrop-filter: blur(10px);
-        border: 1px solid #e2e8e0;
-      }
-      .hover-lift {
-        transition: transform 0.2s ease-out, box-shadow 0.2s ease-out;
-      }
-      .hover-lift:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(15, 23, 42, 0.05);
-      }
-    </style>
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Đăng nhập hệ thống quản lý Thư viện Lexicon.">
+    <title>Đăng nhập | Lexicon Library</title>
+    <link rel="stylesheet" th:href="@{/css/lexicon.css}">
+    <script defer th:src="@{/js/lexicon.js}"></script>
 </head>
-<body class="bg-background text-on-background font-body-md text-body-md min-h-screen flex flex-col">
-<!-- Global Header -->
-<nav class="flex justify-between items-center px-margin-desktop py-6 w-full max-w-container-max mx-auto absolute top-0 left-0 right-0 z-10">
-<div class="flex items-center gap-2">
-<span class="material-symbols-outlined text-primary text-3xl" data-icon="auto_stories">auto_stories</span>
-<span class="font-display-lg text-headline-md text-primary tracking-tight font-bold">Lexicon Library</span>
-</div>
-<a class="flex items-center gap-2 text-on-surface-variant hover:text-primary transition-colors font-label-md text-label-md" href="/">
-<span class="material-symbols-outlined" data-icon="arrow_back">arrow_back</span>
-            Trang chủ
+<body class="auth-page">
+<a class="skip-link" href="#main-content">Bỏ qua điều hướng</a>
+<header class="site-header">
+    <div class="container site-header__inner">
+        <a class="brand" th:href="@{/}" aria-label="Lexicon Library - Trang chủ">
+            <span class="brand__mark" aria-hidden="true">LX</span>
+            <span>Lexicon Library</span>
         </a>
-</nav>
-<!-- Main Content Canvas -->
-<main class="flex-grow flex items-center justify-center academic-gradient relative px-margin-mobile md:px-0">
-<!-- Background Decorative Element (Subtle Library Vibe) -->
-<div class="absolute inset-0 opacity-5 pointer-events-none overflow-hidden">
-<div class="w-full h-full bg-cover bg-center" data-alt="A high-angle, cinematic view of a majestic, modern academic library with rows of dark wood bookshelves and large windows casting soft, natural light. The atmosphere is quiet, dignified, and intellectually inspiring, rendered in a minimalist light-mode aesthetic with slate and cream tones." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBZf0gP6DK_sOzko3veSSDcJeFpCLDlJ-Me3FlNCzLBR4Ue0kcQKlxuZYPnVOi7MTgyGmrFA8O-pS8djA2MgisxX5nBgRPpAcC94HvtfY_AsmdYKotX5J2pk0DjvOE5FlbOdBK2T3zR4eKpmWIU2z7Ct5jLl7eUbE2ep-TybkyJgYBo5jJDfkAb0bBancxLqPsVSMDKAjOSxtlNWb7h__WfB3jLMeLHDb5LpjlkvCrGJhpzqx-Ii2gKn09WBmSpNttu176trQJ78con')"></div>
-</div>
-<!-- Login Card Section -->
-<div class="w-full max-w-md relative z-10">
-<div class="glass-card p-8 md:p-12 rounded-lg shadow-sm">
-<!-- Branding & Title -->
-<div class="text-center mb-10">
-<h1 class="font-headline-lg text-headline-lg text-primary mb-2 font-bold">Chào mừng trở lại</h1>
-<p class="text-on-surface-variant font-body-md text-body-md italic">Hệ thống Quản lý Thư viện Lexicon</p>
-</div>
-<div th:if="${errorMessage}" class="mb-4 rounded border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
-    <span th:text="${errorMessage}"></span>
-</div>
-<!-- Login Form -->
-<form th:action="@{/login}" class="space-y-6" method="post">
-<!-- Member ID / Email Input -->
-<div class="space-y-2">
-<label class="block font-label-md text-label-md text-on-surface uppercase tracking-wider" for="member-id">MÃ THÀNH VIÊN</label>
-<div class="relative group">
-<span class="absolute left-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-outline group-focus-within:text-primary transition-colors" data-icon="account_circle">account_circle</span>
-<input class="w-full h-12 pl-10 pr-4 bg-surface-container-low border border-outline-variant rounded focus:ring-2 focus:ring-primary/10 focus:border-primary outline-none transition-all placeholder:text-outline/50" id="member-id" name="member-id" placeholder="LIB-XXXXX" required="" type="text">
-</div>
-</div>
-<!-- Password Input -->
-<div class="space-y-2">
-<div class="flex justify-between items-center">
-<label class="block font-label-md text-label-md text-on-surface uppercase tracking-wider" for="password">Mật khẩu</label>
-<a class="text-label-sm font-label-sm text-on-secondary-container hover:underline" href="#">Quên mật khẩu?</a>
-</div>
-<div class="relative group">
-<span class="absolute left-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-outline group-focus-within:text-primary transition-colors" data-icon="lock">lock</span>
-<input class="w-full h-12 pl-10 pr-4 bg-surface-container-low border border-outline-variant rounded focus:ring-2 focus:ring-primary/10 focus:border-primary outline-none transition-all placeholder:text-outline/50" id="password" name="password" placeholder="••••••••" required="" type="password">
-<button class="absolute right-3 top-1/2 -translate-y-1/2 text-outline hover:text-primary transition-colors" type="button">
-<span class="material-symbols-outlined" data-icon="visibility">visibility</span>
-</button>
-</div>
-</div>
-<!-- Remember Me -->
-<div class="flex items-center gap-3">
-<input class="w-4 h-4 text-primary border-outline-variant rounded focus:ring-primary" id="remember" name="remember" type="checkbox">
-<label class="text-label-sm font-label-sm text-on-surface-variant" for="remember">Ghi nhớ phiên đăng nhập</label>
-</div>
-<!-- Submit Button -->
-<button class="w-full h-14 bg-primary text-on-primary font-label-md text-label-md rounded flex items-center justify-center gap-2 hover:bg-on-primary-container transition-all duration-300 transform active:scale-95 shadow-lg shadow-primary/10" type="submit">
-                        Đăng nhập
-                        <span class="material-symbols-outlined" data-icon="chevron_right">chevron_right</span>
-</button>
-</form>
-</div>
-<!-- Accessibility/Help Note -->
-<div class="mt-6 flex justify-center gap-6 text-on-surface-variant/60 font-label-sm text-label-sm">
-<a class="hover:text-primary transition-colors flex items-center gap-1" href="#">
-<span class="material-symbols-outlined text-[16px]" data-icon="help">help</span> Hỗ trợ
-                </a>
-<a class="hover:text-primary transition-colors flex items-center gap-1" href="#">
-<span class="material-symbols-outlined text-[16px]" data-icon="policy">policy</span> Chính sách bảo mật
-                </a>
-<span class="flex items-center gap-1">
-<span class="material-symbols-outlined text-[16px]" data-icon="language">language</span> VN
-                </span>
-</div>
-</div>
-</main>
-<!-- Footer Component -->
-<footer class="bg-tertiary-container text-on-tertiary-container py-8 border-t border-outline-variant/10">
-<div class="flex flex-col md:flex-row justify-between items-center px-margin-desktop w-full max-w-container-max mx-auto gap-4">
-<div class="flex items-center gap-4">
-<span class="font-display-lg text-headline-md text-on-tertiary-container opacity-50 font-bold">Lexicon Library</span>
-<span class="hidden md:block w-[1px] h-4 bg-outline-variant/30"></span>
-<p class="font-body-md text-body-md opacity-70">© 2024 Lexicon Institutional Library. All scholarly rights reserved.</p>
-</div>
-<div class="flex gap-6">
-<a class="text-on-tertiary-container/80 hover:text-on-tertiary transition-colors font-label-sm text-label-sm" href="#">Privacy Policy</a>
-<a class="text-on-tertiary-container/80 hover:text-on-tertiary transition-colors font-label-sm text-label-sm" href="#">Terms of Service</a>
-<a class="text-on-tertiary-container/80 hover:text-on-tertiary transition-colors font-label-sm text-label-sm" href="#">Accessibility</a>
-</div>
-</div>
-</footer>
-<!-- Micro-interactions Script -->
-<script>
-        document.querySelectorAll('input').forEach(input => {
-            input.addEventListener('focus', () => {
-                input.parentElement.classList.add('shadow-md');
-            });
-            input.addEventListener('blur', () => {
-                input.parentElement.classList.remove('shadow-md');
-            });
-        });
+        <a class="text-link" th:href="@{/}">← Trang chủ</a>
+    </div>
+</header>
 
-        // Toggle Password Visibility
-        const togglePass = document.querySelector('button[type="button"]');
-        const passInput = document.getElementById('password');
-        if (togglePass) {
-            togglePass.addEventListener('click', () => {
-                const isPass = passInput.type === 'password';
-                passInput.type = isPass ? 'text' : 'password';
-                togglePass.querySelector('span').innerText = isPass ? 'visibility_off' : 'visibility';
-            });
-        }
-    </script>
-</body></html>
+<main class="auth-main" id="main-content">
+    <section class="auth-panel" aria-labelledby="login-title">
+        <div class="auth-panel__header">
+            <p class="eyebrow">Cổng thành viên</p>
+            <h1 id="login-title">Chào mừng trở lại</h1>
+            <p>Đăng nhập để tiếp tục sử dụng thư viện.</p>
+        </div>
+
+        <div class="notice notice--error" role="alert" th:if="${errorMessage}">
+            <span th:text="${errorMessage}">Thông tin đăng nhập không đúng.</span>
+        </div>
+
+        <form class="form-stack" method="post" th:action="@{/login}">
+            <div class="field">
+                <label for="member-id">Mã thành viên hoặc tên đăng nhập</label>
+                <input id="member-id"
+                       name="member-id"
+                       type="text"
+                       autocomplete="username"
+                       placeholder="Ví dụ: LIB-001"
+                       required
+                       autofocus>
+            </div>
+
+            <div class="field">
+                <label for="password">Mật khẩu</label>
+                <div class="password-field">
+                    <input id="password"
+                           name="password"
+                           type="password"
+                           autocomplete="current-password"
+                           placeholder="Nhập mật khẩu"
+                           required>
+                    <button type="button"
+                            data-password-toggle
+                            aria-controls="password"
+                            aria-pressed="false"
+                            aria-label="Hiện mật khẩu">Hiện</button>
+                </div>
+            </div>
+
+            <button class="button" type="submit">Đăng nhập</button>
+        </form>
+
+        <p class="auth-help">
+            Nếu chưa có tài khoản hoặc quên thông tin đăng nhập, vui lòng liên hệ thủ thư.
+        </p>
+    </section>
+</main>
+
+<footer class="site-footer">
+    <div class="container site-footer__bottom">
+        <span>© <span data-current-year>2026</span> Lexicon Library</span>
+        <span>Hệ thống quản lý thư viện</span>
+    </div>
+</footer>
+</body>
+</html>

@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<body>
+<header class="site-header" th:fragment="header(user, currentPage)">
+    <div class="container site-header__inner">
+        <a class="brand" th:href="@{/}" aria-label="Lexicon Library - Trang chủ">
+            <span class="brand__mark" aria-hidden="true">LX</span>
+            <span>Lexicon Library</span>
+        </a>
+
+        <nav class="site-nav" aria-label="Điều hướng chính">
+            <a class="site-nav__link"
+               th:classappend="${currentPage == 'home'} ? ' active'"
+               th:href="@{/}">Trang chủ</a>
+            <a class="site-nav__link"
+               th:classappend="${currentPage == 'search'} ? ' active'"
+               th:href="@{/books/search(keyword='')}">Tra cứu</a>
+            <a class="site-nav__link"
+               th:if="${user != null and #strings.equalsIgnoreCase(user.role, 'customer')}"
+               th:classappend="${currentPage == 'borrow'} ? ' active'"
+               th:href="@{/borrow}">Sách đang mượn</a>
+            <a class="site-nav__link"
+               th:if="${user != null and #strings.equalsIgnoreCase(user.role, 'customer')}"
+               th:classappend="${currentPage == 'preorder'} ? ' active'"
+               th:href="@{/preorder}">Đặt trước</a>
+        </nav>
+
+        <div class="header-actions">
+            <a class="button button--secondary" th:if="${user == null}" th:href="@{/login}">
+                Đăng nhập
+            </a>
+
+            <div class="profile" th:if="${user != null}">
+                <button class="profile__trigger"
+                        type="button"
+                        data-profile-trigger
+                        aria-expanded="false"
+                        aria-controls="profile-menu">
+                    <span class="profile__avatar" aria-hidden="true"
+                          th:text="${#strings.substring(user.fullName, 0, 1)}">L</span>
+                    <span class="profile__name" th:text="${user.fullName}">Người dùng</span>
+                    <span class="meta" aria-hidden="true">⌄</span>
+                </button>
+                <nav class="profile__menu" id="profile-menu" data-profile-menu hidden aria-label="Tài khoản">
+                    <a th:if="${#strings.equalsIgnoreCase(user.role, 'customer')}" th:href="@{/borrow}">
+                        Sách đang mượn
+                    </a>
+                    <a th:if="${#strings.equalsIgnoreCase(user.role, 'customer')}" th:href="@{/preorder}">
+                        Sách đã đặt trước
+                    </a>
+                    <a th:if="${#strings.equalsIgnoreCase(user.role, 'manager')}" th:href="@{/manager/dashboard}">
+                        Bảng điều khiển
+                    </a>
+                    <a th:if="${#strings.equalsIgnoreCase(user.role, 'admin')}" th:href="@{/admin/dashboard}">
+                        Quản trị tài khoản
+                    </a>
+                    <a th:href="@{/logout}">Đăng xuất</a>
+                </nav>
+            </div>
+        </div>
+    </div>
+</header>
+
+<footer class="site-footer" th:fragment="footer">
+    <div class="container">
+        <div class="site-footer__grid">
+            <section>
+                <h2>Thư viện Lexicon</h2>
+                <p>
+                    Không gian tra cứu và quản lý tài liệu dành cho độc giả,
+                    nhà nghiên cứu và cộng đồng học thuật.
+                </p>
+            </section>
+            <section>
+                <h3>Khám phá</h3>
+                <ul>
+                    <li><a th:href="@{/books/search(keyword='')}">Danh mục sách</a></li>
+                    <li><a th:href="@{/}">Trang chủ</a></li>
+                </ul>
+            </section>
+            <section>
+                <h3>Tài khoản</h3>
+                <ul>
+                    <li><a th:href="@{/login}">Đăng nhập</a></li>
+                    <li><a th:href="@{/borrow}">Sách đang mượn</a></li>
+                </ul>
+            </section>
+        </div>
+        <div class="site-footer__bottom">
+            <span>© <span data-current-year>2026</span> Lexicon Library</span>
+            <span>Tri thức được tổ chức để dễ dàng tiếp cận</span>
+        </div>
+    </div>
+</footer>
+</body>
+</html>

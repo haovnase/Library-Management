@@ -354,12 +354,19 @@ public class ManagerController {
     //xem danh sách đặt trước
 
     @GetMapping("/manager/preorder")
-    public String getPreOrderBooks(Model model) {
+    public String getPreOrderBooks(
+            @SessionAttribute(name = "user", required = false) User user,
+            Model model) {
+
+        if (user == null || !"manager".equalsIgnoreCase(user.getRole())) {
+            return "redirect:/login";
+        }
 
         model.addAttribute(
                 "preOrderBooks",
                 preOrderBookService.findAll()
         );
+        model.addAttribute("user", user);
 
         return "manager/preorder";
     }
@@ -368,7 +375,12 @@ public class ManagerController {
 
     @PostMapping("/manager/preorder/ready")
     public String readyPreOrder(
+            @SessionAttribute(name = "user", required = false) User user,
             @RequestParam String id) {
+
+        if (user == null || !"manager".equalsIgnoreCase(user.getRole())) {
+            return "redirect:/login";
+        }
 
         PreOrderBook preOrderBook =
                 preOrderBookService.findById(id);
@@ -385,7 +397,12 @@ public class ManagerController {
 
     @PostMapping("/manager/preorder/complete")
     public String completePreOrder(
+            @SessionAttribute(name = "user", required = false) User user,
             @RequestParam String id) {
+
+        if (user == null || !"manager".equalsIgnoreCase(user.getRole())) {
+            return "redirect:/login";
+        }
 
         PreOrderBook preOrderBook =
                 preOrderBookService.findById(id);
@@ -402,7 +419,12 @@ public class ManagerController {
 
     @PostMapping("/manager/preorder/cancel")
     public String cancelPreOrder(
+            @SessionAttribute(name = "user", required = false) User user,
             @RequestParam String id) {
+
+        if (user == null || !"manager".equalsIgnoreCase(user.getRole())) {
+            return "redirect:/login";
+        }
 
         PreOrderBook preOrderBook =
                 preOrderBookService.findById(id);

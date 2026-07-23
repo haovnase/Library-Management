@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 800" role="img" aria-labelledby="title desc">
+  <title id="title">Bìa sách chưa được cập nhật</title>
+  <desc id="desc">Hình minh họa một cuốn sách với chữ Lexicon Library.</desc>
+  <rect width="600" height="800" fill="#f3f3f3"/>
+  <rect x="54" y="54" width="492" height="692" fill="#fff" stroke="#1a1c1c" stroke-width="4"/>
+  <path d="M112 174h376M112 206h258M112 594h376" stroke="#cfc4c5" stroke-width="4"/>
+  <text x="112" y="330" fill="#1a1c1c" font-family="Georgia,serif" font-size="56" font-weight="700">Lexicon</text>
+  <text x="112" y="390" fill="#1a1c1c" font-family="Georgia,serif" font-size="56" font-weight="700">Library</text>
+  <text x="112" y="640" fill="#a33800" font-family="monospace" font-size="20">BOOK COVER PENDING</text>
+</svg>

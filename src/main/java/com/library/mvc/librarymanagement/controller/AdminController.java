@@ -43,8 +43,10 @@ public class AdminController {
         }
 
         model.addAttribute("user", currentUser);
-        model.addAttribute("users", userService.findAll());
+        List<User> users = userService.findAll();
+        model.addAttribute("users", users);
         model.addAttribute("activeTab", "users");
+        addUserMetrics(model);
 
         return "admin";
     }
@@ -72,6 +74,7 @@ public class AdminController {
         model.addAttribute("user", currentUser);
         model.addAttribute("users", users);
         model.addAttribute("activeTab", "users");
+        addUserMetrics(model);
 
         return "admin";
     }
@@ -101,6 +104,7 @@ public class AdminController {
         model.addAttribute("users", users);
         model.addAttribute("keyword", keyword);
         model.addAttribute("activeTab", "users");
+        addUserMetrics(model);
 
         return "admin";
     }
@@ -123,8 +127,12 @@ public class AdminController {
             return "redirect:/";
         }
 
+        UserDTO userDTO = new UserDTO();
+        userDTO.setRole("customer");
+        userDTO.setStatus("active");
+
         model.addAttribute("user", currentUser);
-        model.addAttribute("userDTO", new UserDTO());
+        model.addAttribute("userDTO", userDTO);
 
         return "add-user";
     }
@@ -277,8 +285,10 @@ public class AdminController {
         user.setUsername(userDTO.getUsername());
         user.setPassword(userDTO.getPassword());
         user.setFullName(userDTO.getFullName());
-        user.setRole(userDTO.getRole());
-        user.setStatus(userDTO.getStatus());
+        if (!user.getId().equals(currentUser.getId())) {
+            user.setRole(userDTO.getRole());
+            user.setStatus(userDTO.getStatus());
+        }
 
         userService.updateUser(user);
 
@@ -304,7 +314,7 @@ public class AdminController {
 
         User user = userService.findById(id);
 
-        if (user != null) {
+        if (user != null && !user.getId().equals(currentUser.getId())) {
 
             user.setStatus("locked");
 
@@ -333,7 +343,7 @@ public class AdminController {
 
         User user = userService.findById(id);
 
-        if (user != null) {
+        if (user != null && !user.getId().equals(currentUser.getId())) {
 
             user.setStatus("active");
 
@@ -364,7 +374,7 @@ public class AdminController {
 
         User user = userService.findById(id);
 
-        if (user != null) {
+        if (user != null && !user.getId().equals(currentUser.getId())) {
 
             user.setRole(role);
 
@@ -393,7 +403,7 @@ public class AdminController {
 
         User user = userService.findById(id);
 
-        if (user != null) {
+        if (user != null && !user.getId().equals(currentUser.getId())) {
 
             user.setStatus("locked");
 
@@ -401,6 +411,28 @@ public class AdminController {
         }
 
         return "redirect:/admin/users";
+    }
+
+    private void addUserMetrics(Model model) {
+        List<User> allUsers = userService.findAll();
+
+        model.addAttribute("totalUsers", allUsers.size());
+        model.addAttribute(
+                "activeUsers",
+                allUsers.stream()
+                        .filter(user -> "active".equalsIgnoreCase(user.getStatus()))
+                        .count());
+        model.addAttribute(
+                "lockedUsers",
+                allUsers.stream()
+                        .filter(user -> "locked".equalsIgnoreCase(user.getStatus()))
+                        .count());
+        model.addAttribute(
+                "privilegedUsers",
+                allUsers.stream()
+                        .filter(user -> "admin".equalsIgnoreCase(user.getRole())
+                                || "manager".equalsIgnoreCase(user.getRole()))
+                        .count());
     }
 
 }

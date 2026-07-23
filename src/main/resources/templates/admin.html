@@ -1,216 +1,176 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
 <head>
-
-    <meta charset="UTF-8">
-
-    <title>Admin Dashboard</title>
-
-    <style>
-        .btn-edit {
-            display: inline-block;
-            padding: 4px 10px;
-            background-color: #f0f0f0;
-            border: 1px solid #999;
-            border-radius: 3px;
-            color: #000;
-            text-decoration: none;
-            cursor: pointer;
-            font: inherit;
-        }
-
-        .btn-edit:hover {
-            background-color: #e0e0e0;
-        }
-    </style>
-
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Quản trị tài khoản người dùng tại Thư viện Lexicon.">
+    <title>Quản trị người dùng | Lexicon Library</title>
+    <link rel="stylesheet" th:href="@{/css/lexicon.css}">
+    <script defer th:src="@{/js/lexicon.js}"></script>
 </head>
-
 <body>
-
-<h1>Library Management System</h1>
-
-<hr>
-
-<h2>Admin Dashboard</h2>
-
-<p>
-
-    Welcome
-
-    <b th:text="${user.fullName}"></b>
-
-</p>
-
-<a th:href="@{/logout}">
-
-    Logout
-
-</a>
-
-<hr>
-
-<h2>User Management</h2>
-
-<form th:action="@{/admin/users/search}" method="get">
-
-    <input
-            type="text"
-            name="keyword"
-            th:value="${keyword}"
-            placeholder="Search username">
-
-    <button type="submit">
-
-        Search
-
-    </button>
-
-</form>
-
-<br>
-
-<a th:href="@{/admin/users/add}">
-
-    Add User
-
-</a>
-
-<hr>
-<table border="1">
-
-    <tr>
-
-        <th>ID</th>
-
-        <th>Username</th>
-
-        <th>Full Name</th>
-
-        <th>Role</th>
-
-        <th>Status</th>
-
-        <th>Action</th>
-
-    </tr>
-
-    <tr th:each="u : ${users}">
-
-        <td th:text="${u.id}"></td>
-
-        <td th:text="${u.username}"></td>
-
-        <td th:text="${u.fullName}"></td>
-
-        <td th:text="${u.role}"></td>
-
-        <td th:text="${u.status}"></td>
-
-        <td>
-
-            <a class="btn-edit" th:href="@{/admin/users/edit/{id}(id=${u.id})}">
-
-                Edit
-
-            </a>
-
-            <br><br>
-
-            <form
-                    th:if="${u.status=='active'}"
-                    th:action="@{/admin/users/lock}"
-                    method="post"
-                    onsubmit="return confirm('Bạn chắc chắn muốn khoá user này?');">
-
-                <input
-                        type="hidden"
-                        name="id"
-                        th:value="${u.id}">
-
-                <button type="submit">
-
-                    Lock
-
-                </button>
-
-            </form>
-
-            <form
-                    th:if="${u.status=='locked'}"
-                    th:action="@{/admin/users/unlock}"
-                    method="post"
-                    onsubmit="return confirm('Bạn chắc chắn muốn mở khoá user này?');">
-
-                <input
-                        type="hidden"
-                        name="id"
-                        th:value="${u.id}">
-
-                <button type="submit">
-
-                    Unlock
-
-                </button>
-
-            </form>
-
-            <br>
-
-            <form
-                    th:action="@{/admin/users/change-role}"
-                    method="post"
-                    onsubmit="return confirm('Bạn chắc chắn muốn đổi quyền user này?');">
-
-                <input
-                        type="hidden"
-                        name="id"
-                        th:value="${u.id}">
-
-                <select
-                        name="role">
-
-                    <option
-                            value="admin"
-                            th:selected="${u.role=='admin'}">
-
-                        Admin
-
-                    </option>
-
-                    <option
-                            value="manager"
-                            th:selected="${u.role=='manager'}">
-
-                        Manager
-
-                    </option>
-
-                    <option
-                            value="customer"
-                            th:selected="${u.role=='customer'}">
-
-                        Customer
-
-                    </option>
-
-                </select>
-
-                <button type="submit">
-
-                    Change
-
-                </button>
-
-            </form>
-
-        </td>
-
-    </tr>
-
-</table>
-
+<a class="skip-link" href="#main-content">Bỏ qua điều hướng</a>
+<header th:replace="~{fragments/layout :: header(${user}, 'admin')}"></header>
+
+<main id="main-content">
+    <section class="page-heading">
+        <div class="container">
+            <p class="eyebrow">Quản trị hệ thống</p>
+            <h1>Quản lý người dùng</h1>
+            <p>
+                Xin chào <strong th:text="${user.fullName}">Quản trị viên</strong>.
+                Theo dõi tài khoản, quyền truy cập và trạng thái hoạt động tại một nơi.
+            </p>
+        </div>
+    </section>
+
+    <section aria-label="Thống kê tài khoản">
+        <div class="container admin-stats">
+            <article class="admin-stat">
+                <strong class="admin-stat__value" th:text="${totalUsers}">0</strong>
+                <span class="meta">Tổng tài khoản</span>
+            </article>
+            <article class="admin-stat">
+                <strong class="admin-stat__value" th:text="${activeUsers}">0</strong>
+                <span class="meta">Đang hoạt động</span>
+            </article>
+            <article class="admin-stat">
+                <strong class="admin-stat__value" th:text="${lockedUsers}">0</strong>
+                <span class="meta">Đã khóa</span>
+            </article>
+            <article class="admin-stat">
+                <strong class="admin-stat__value" th:text="${privilegedUsers}">0</strong>
+                <span class="meta">Admin và manager</span>
+            </article>
+        </div>
+    </section>
+
+    <section class="section section--white" aria-labelledby="user-list-title">
+        <div class="container">
+            <div class="section__header">
+                <h2 id="user-list-title">Danh sách tài khoản</h2>
+                <span class="meta" th:text="|${users != null ? users.size() : 0} kết quả|">0 kết quả</span>
+            </div>
+
+            <div class="admin-toolbar">
+                <form class="search-form"
+                      th:action="@{/admin/users/search}"
+                      method="get"
+                      role="search">
+                    <label class="skip-link" for="admin-user-search">Tìm theo tên đăng nhập</label>
+                    <input id="admin-user-search"
+                           type="search"
+                           name="keyword"
+                           th:value="${keyword}"
+                           placeholder="Tìm theo tên đăng nhập…"
+                           autocomplete="off">
+                    <button class="button" type="submit">Tìm kiếm</button>
+                </form>
+                <a class="button" th:href="@{/admin/users/add}">Thêm tài khoản</a>
+            </div>
+
+            <div class="table-wrap" th:if="${users != null and !users.isEmpty()}">
+                <table class="data-table">
+                    <thead>
+                    <tr>
+                        <th scope="col">Người dùng</th>
+                        <th scope="col">Họ và tên</th>
+                        <th scope="col">Vai trò</th>
+                        <th scope="col">Trạng thái</th>
+                        <th scope="col">Thay đổi quyền</th>
+                        <th scope="col">Thao tác</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="managedUser : ${users}">
+                        <td>
+                            <div class="user-identity">
+                                <strong th:text="${managedUser.username}">username</strong>
+                                <span th:text="${managedUser.id}">U001</span>
+                            </div>
+                        </td>
+                        <td th:text="${managedUser.fullName}">Người dùng</td>
+                        <td>
+                            <span class="status"
+                                  th:classappend="${managedUser.role == 'admin'} ? ' status--error' :
+                                                 (${managedUser.role == 'manager'} ? ' status--warning' : ' status--success')"
+                                  th:text="${managedUser.role == 'admin'} ? 'Quản trị viên' :
+                                           (${managedUser.role == 'manager'} ? 'Thủ thư' : 'Độc giả')">
+                                Độc giả
+                            </span>
+                        </td>
+                        <td>
+                            <span class="status"
+                                  th:classappend="${managedUser.status == 'active'}
+                                      ? ' status--success' : ' status--error'"
+                                  th:text="${managedUser.status == 'active'} ? 'Hoạt động' : 'Đã khóa'">
+                                Hoạt động
+                            </span>
+                        </td>
+                        <td>
+                            <form class="role-form"
+                                  th:if="${managedUser.id != user.id}"
+                                  th:action="@{/admin/users/change-role}"
+                                  method="post">
+                                <input type="hidden" name="id" th:value="${managedUser.id}">
+                                <label class="skip-link" th:for="|role-${managedUser.id}|">
+                                    Vai trò của <span th:text="${managedUser.username}">người dùng</span>
+                                </label>
+                                <select name="role" th:id="|role-${managedUser.id}|">
+                                    <option value="customer" th:selected="${managedUser.role == 'customer'}">Độc giả</option>
+                                    <option value="manager" th:selected="${managedUser.role == 'manager'}">Thủ thư</option>
+                                    <option value="admin" th:selected="${managedUser.role == 'admin'}">Quản trị viên</option>
+                                </select>
+                                <button class="button"
+                                        type="submit"
+                                        data-confirm="Xác nhận thay đổi vai trò của tài khoản này?">
+                                    Lưu
+                                </button>
+                            </form>
+                            <span class="current-user-note" th:if="${managedUser.id == user.id}">
+                                Tài khoản hiện tại
+                            </span>
+                        </td>
+                        <td>
+                            <div class="actions">
+                                <a class="button button--secondary"
+                                   th:href="@{/admin/users/edit/{id}(id=${managedUser.id})}">
+                                    Chỉnh sửa
+                                </a>
+
+                                <form th:if="${managedUser.id != user.id and managedUser.status == 'active'}"
+                                      th:action="@{/admin/users/lock}"
+                                      method="post">
+                                    <input type="hidden" name="id" th:value="${managedUser.id}">
+                                    <button class="button button--danger"
+                                            type="submit"
+                                            data-confirm="Khóa tài khoản này? Người dùng sẽ không thể tiếp tục truy cập.">
+                                        Khóa
+                                    </button>
+                                </form>
+
+                                <form th:if="${managedUser.id != user.id and managedUser.status == 'locked'}"
+                                      th:action="@{/admin/users/unlock}"
+                                      method="post">
+                                    <input type="hidden" name="id" th:value="${managedUser.id}">
+                                    <button class="button" type="submit">Mở khóa</button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="empty-state" th:if="${users == null or users.isEmpty()}">
+                <h2>Không tìm thấy tài khoản</h2>
+                <p>Thử một tên đăng nhập khác hoặc quay lại danh sách đầy đủ.</p>
+                <a class="button button--secondary" th:href="@{/admin/users}">Xem tất cả</a>
+            </div>
+        </div>
+    </section>
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
 </body>
-
 </html>

@@ -1,9 +1,7 @@
 package com.library.mvc.librarymanagement.controller;
 
 import com.library.mvc.librarymanagement.entity.User;
-import com.library.mvc.librarymanagement.repository.UserRepository;
 import com.library.mvc.librarymanagement.service.UserService;
-
 import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -25,11 +23,17 @@ public class LoginController {
     @GetMapping("/login")
     public String loginPage(
             @RequestParam(value = "error", required = false) String error,
+            @RequestParam(value = "locked", required = false) String locked,
             Model model) {
 
-        if (error != null) {
-            model.addAttribute("errorMessage",
-                    "Mã thành viên hoặc mật khẩu không đúng.");
+        if (locked != null) {
+            model.addAttribute(
+                    "errorMessage",
+                    "Tài khoản đã bị khóa. Vui lòng liên hệ quản trị viên.");
+        } else if (error != null) {
+            model.addAttribute(
+                    "errorMessage",
+                    "Tên đăng nhập hoặc mật khẩu không đúng.");
         }
 
         return "login";
@@ -42,23 +46,25 @@ public class LoginController {
             HttpSession session) {
 
         Optional<User> user = userService.login(memberId, password);
-
-        if (user.isPresent()) {
-
-            session.setAttribute("user", user.get());
-
-            if ("admin".equalsIgnoreCase(user.get().getRole())) {
-                return "redirect:/admin/dashboard";
-            }
-
-            if ("manager".equalsIgnoreCase(user.get().getRole())) {
-                return "redirect:/manager/dashboard";
-            }
-
-            return "redirect:/";
+        if (user.isEmpty()) {
+            return "redirect:/login?error=true";
         }
 
-        return "redirect:/login?error=true";
+        if (!"active".equalsIgnoreCase(user.get().getStatus())) {
+            return "redirect:/login?locked=true";
+        }
+
+        session.setAttribute("user", user.get());
+
+        if ("admin".equalsIgnoreCase(user.get().getRole())) {
+            return "redirect:/admin/dashboard";
+        }
+
+        if ("manager".equalsIgnoreCase(user.get().getRole())) {
+            return "redirect:/manager/dashboard";
+        }
+
+        return "redirect:/";
     }
 
     @GetMapping("/logout")

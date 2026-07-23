@@ -1,273 +1,105 @@
 <!DOCTYPE html>
-
-<html xmlns:th="http://www.thymeleaf.org" class="scroll-smooth" lang="vi"
-    style="width: 1280px; height: 2395px; overflow: hidden; position: relative;">
-
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="utf-8" />
-    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Tra cứu và quản lý tài liệu tại Thư viện Lexicon.">
     <title>Thư viện Lexicon | Trang chủ</title>
-    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Roboto:wght@400;500;700&amp;display=swap"
-        rel="stylesheet" />
-    <link
-        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
-        rel="stylesheet" />
-    <style>
-        .material-symbols-outlined {
-            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
-        }
-
-        .hide-scrollbar::-webkit-scrollbar {
-            display: none;
-        }
-
-        .hide-scrollbar {
-            -ms-overflow-style: none;
-            scrollbar-width: none;
-        }
-    </style>
-    <!-- Tailwind Configuration -->
-    <script id="tailwind-config">
-        tailwind.config = {
-            darkMode: "class",
-            theme: {
-                extend: {
-                    "colors": {
-                        "primary-container": "#131b2e",
-                        "surface": "#ffffff",
-                        "on-primary-container": "#7c839b",
-                        "surface-container-low": "#f8fafc",
-                        "on-tertiary": "#ffffff",
-                        "tertiary": "#000000",
-                        "inverse-primary": "#bec6e0",
-                        "on-secondary": "#ffffff",
-                        "on-secondary-fixed": "#331200",
-                        "secondary-container": "#fd8a42",
-                        "on-secondary-fixed-variant": "#763300",
-                        "on-error": "#ffffff",
-                        "surface-variant": "#f1f5f9",
-                        "inverse-surface": "#2d3133",
-                        "background": "#ffffff",
-                        "tertiary-fixed": "#d3e4fe",
-                        "outline-variant": "#e2e8f0",
-                        "primary-fixed-dim": "#bec6e0",
-                        "on-error-container": "#93000a",
-                        "surface-container-lowest": "#ffffff",
-                        "tertiary-fixed-dim": "#b7c8e1",
-                        "surface-container-highest": "#e2e8f0",
-                        "error-container": "#ffdad6",
-                        "on-primary-fixed-variant": "#3f465c",
-                        "surface-container-high": "#f1f5f9",
-                        "inverse-on-surface": "#eff1f3",
-                        "error": "#ba1a1a",
-                        "on-primary": "#ffffff",
-                        "on-surface-variant": "#64748b",
-                        "tertiary-container": "#0b1c30",
-                        "surface-dim": "#f1f5f9",
-                        "on-primary-fixed": "#131b2e",
-                        "primary": "#000000",
-                        "on-tertiary-fixed-variant": "#38485d",
-                        "on-background": "#0f172a",
-                        "on-tertiary-container": "#75859d",
-                        "on-surface": "#0f172a",
-                        "surface-tint": "#565e74",
-                        "secondary-fixed-dim": "#ffb68e",
-                        "surface-container": "#f8fafc",
-                        "on-secondary-container": "#682c00",
-                        "on-tertiary-fixed": "#0b1c30",
-                        "secondary": "#9b4500",
-                        "outline": "#94a3b8",
-                        "surface-bright": "#ffffff",
-                        "secondary-fixed": "#ffdbca",
-                        "primary-fixed": "#dae2fd"
-                    },
-                    "borderRadius": {
-                        "DEFAULT": "0px",
-                        "lg": "0px",
-                        "xl": "0px",
-                        "full": "9999px"
-                    },
-                    "spacing": {
-                        "unit": "8px",
-                        "gutter": "24px",
-                        "margin-desktop": "48px",
-                        "margin-mobile": "20px",
-                        "container-max": "1140px"
-                    },
-                    "fontFamily": {
-                        "display-lg": ["Inter"],
-                        "body-md": ["Inter"],
-                        "headline-lg": ["Inter"],
-                        "headline-md": ["Inter"],
-                        "body-lg": ["Inter"],
-                        "headline-lg-mobile": ["Inter"],
-                        "label-sm": ["Inter"],
-                        "label-md": ["Inter"]
-                    },
-                    "fontSize": {
-                        "display-lg": ["40px", { "lineHeight": "48px", "fontWeight": "700" }],
-                        "body-md": ["15px", { "lineHeight": "24px", "fontWeight": "400" }],
-                        "headline-lg": ["28px", { "lineHeight": "36px", "fontWeight": "700" }],
-                        "headline-md": ["20px", { "lineHeight": "28px", "fontWeight": "600" }],
-                        "body-lg": ["17px", { "lineHeight": "26px", "fontWeight": "400" }],
-                        "headline-lg-mobile": ["24px", { "lineHeight": "32px", "fontWeight": "700" }],
-                        "label-sm": ["11px", { "lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "500" }],
-                        "label-md": ["13px", { "lineHeight": "20px", "letterSpacing": "0.03em", "fontWeight": "600" }]
-                    }
-                },
-            },
-        }
-    </script>
+    <link rel="stylesheet" th:href="@{/css/lexicon.css}">
+    <script defer th:src="@{/js/lexicon.js}"></script>
 </head>
+<body>
+<a class="skip-link" href="#main-content">Bỏ qua điều hướng</a>
+<header th:replace="~{fragments/layout :: header(${user}, 'home')}"></header>
 
-<body class="bg-surface font-body-md text-on-surface antialiased">
-    <!-- Top Navigation -->
-    <nav class="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-md border-b border-outline-variant">
-        <div class="flex justify-between items-center px-margin-desktop py-5 w-full max-w-container-max mx-auto">
-            <div class="flex items-center gap-10">
-                <span class="font-display-lg text-headline-md text-primary tracking-tight">Lexicon Library</span>
-            </div>
-            <div class="flex items-center gap-6">
-                <button
-                    class="material-symbols-outlined text-on-surface-variant hover:text-primary transition-colors">notifications</button>
-                <div th:if="${user != null}" class="flex items-center gap-4">
-                    <div class="relative group">
-                        <button
-                            class="flex items-center gap-3 px-3 py-2 rounded-full hover:bg-surface-container transition-colors focus:outline-none">
-                            <div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center">
-                                <span class="material-symbols-outlined text-on-primary text-[20px]">person</span>
-                            </div>
-                            <span class="hidden md:block font-label-md text-on-surface" th:text="${user.fullName}">Prof.
-                                Henderson</span>
-                            <span class="material-symbols-outlined text-on-surface-variant">expand_more</span>
-                        </button>
-                        <!-- Dropdown Menu -->
-                        <div
-                            class="absolute right-0 mt-2 w-56 bg-white border border-outline-variant shadow-sm opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50">
-                            <div class="py-2">
-                                <a class="block px-6 py-3 text-label-md text-on-surface hover:bg-surface-container transition-colors"
-                                    href="/borrow">Sách đang mượn</a>
-                                <a class="block px-6 py-3 text-label-md text-on-surface hover:bg-surface-container transition-colors"
-                                    href="/favorites">Danh sách yêu thích</a>
-                                <div class="border-t border-outline-variant my-1"></div>
-                                <a class="block px-6 py-3 text-label-md text-secondary hover:bg-surface-container transition-colors"
-                                    th:href="@{/logout}">Đăng xuất</a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <a th:unless="${user != null}" th:href="@{/login}"
-                    class="bg-primary text-on-primary px-6 py-2 font-label-md hover:bg-zinc-800 transition-colors">Đăng
-                    nhập</a>
+<main id="main-content">
+    <section class="hero">
+        <div class="container">
+            <div class="hero__content">
+                <p class="eyebrow">Kho tri thức Lexicon</p>
+                <h1>Cổng vào tri thức.</h1>
+                <p class="hero__intro">
+                    Tìm kiếm sách, tác giả hoặc ISBN trong bộ sưu tập của thư viện
+                    và theo dõi hành trình đọc của bạn ở cùng một nơi.
+                </p>
+                <form class="search-form" method="get" th:action="@{/books/search}" role="search">
+                    <label class="skip-link" for="home-search">Tìm sách</label>
+                    <input id="home-search"
+                           name="keyword"
+                           type="search"
+                           autocomplete="off"
+                           placeholder="Tên sách, tác giả hoặc ISBN…">
+                    <button class="button" type="submit">Tìm kiếm</button>
+                </form>
             </div>
         </div>
-    </nav>
-    <main class="pt-20">
-        <!-- Streamlined Hero Section -->
-        <section class="relative py-24 flex items-center justify-center bg-surface-container-low overflow-hidden">
-            <div class="relative z-10 w-full max-w-2xl px-margin-mobile text-center">
-                <h1 class="font-display-lg text-display-lg text-primary mb-8">Cổng vào Tri thức</h1>
-                <form class="relative mt-2" method="get" action="/books/search">
-                    <input name="keyword"
-                        class="w-full h-14 pl-6 pr-32 bg-white border border-outline-variant text-body-lg focus:ring-1 focus:ring-primary focus:border-primary transition-all outline-none"
-                        placeholder="Tìm kiếm sách, tạp chí và bài viết..." type="text" />
+    </section>
 
-                    <button type="submit"
-                        class="absolute right-2 top-2 bottom-2 px-8 bg-primary text-on-primary font-label-md hover:bg-zinc-800 transition-colors">
-                        Tìm kiếm
-                    </button>
-                </form>
-                <div class="mt-6 flex flex-wrap gap-4 justify-center">
-                    <span class="text-label-sm text-on-surface-variant/70 uppercase tracking-widest">Xu hướng:</span>
-                    <a class="text-label-sm text-on-surface-variant hover:text-primary underline underline-offset-4"
-                        href="#">Quantum Mechanics</a>
-                    <a class="text-label-sm text-on-surface-variant hover:text-primary underline underline-offset-4"
-                        href="#">Modern Literature</a>
-                    <a class="text-label-sm text-on-surface-variant hover:text-primary underline underline-offset-4"
-                        href="#">UX Design</a>
-                </div>
+    <section class="stats" aria-label="Thống kê thư viện">
+        <div class="container stats__grid">
+            <article class="stat" th:each="stat : ${stats}">
+                <strong class="stat__value" th:text="${stat.value}">1.2M+</strong>
+                <span class="meta" th:text="${stat.label}">Tổng số sách</span>
+            </article>
+        </div>
+    </section>
+
+    <section class="section section--white" aria-labelledby="featured-title">
+        <div class="container">
+            <div class="section__header">
+                <h2 id="featured-title">Sách trong thư viện</h2>
+                <a class="text-link" th:href="@{/books/search(keyword='')}">Xem toàn bộ</a>
             </div>
-        </section>
-        <!-- Quick Stats - Simplified -->
-        <section class="max-w-container-max mx-auto px-margin-desktop py-12 border-b border-outline-variant">
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-12">
-                <div class="text-center md:text-left" th:each="stat : ${stats}">
-                    <p class="text-headline-lg font-display-lg text-primary" th:text="${stat.value}">1.2M+</p>
-                    <p class="text-label-sm text-on-surface-variant uppercase tracking-widest mt-1"
-                        th:text="${stat.label}">Tổng số sách</p>
-                </div>
+
+            <div class="book-grid" th:if="${books != null and !books.isEmpty()}">
+                <article class="book-card" th:each="book : ${books}">
+                    <a class="book-card__cover"
+                       th:href="@{/books/{id}(id=${book.id})}"
+                       th:aria-label="|Xem chi tiết ${book.bookName}|">
+                        <img th:src="${book.bookJacket != null and !#strings.isEmpty(book.bookJacket)
+                                     ? book.bookJacket : '/other/book-placeholder.svg'}"
+                             th:alt="|Bìa sách ${book.bookName}|">
+                    </a>
+                    <div class="book-card__body">
+                        <span class="meta" th:text="${book.type ?: 'Tài liệu'}">Tài liệu</span>
+                        <h3>
+                            <a th:href="@{/books/{id}(id=${book.id})}"
+                               th:text="${book.bookName}">Tên sách</a>
+                        </h3>
+                        <p class="book-card__author" th:text="${book.author}">Tác giả</p>
+                        <div class="book-card__metadata">
+                            <div th:text="|Năm: ${book.year ?: '—'}|">Năm: —</div>
+                            <div th:text="|Còn lại: ${book.quantity ?: 0} cuốn|">Còn lại: 0 cuốn</div>
+                        </div>
+                        <a class="button button--secondary"
+                           th:href="@{/books/{id}(id=${book.id})}">Chi tiết</a>
+                    </div>
+                </article>
             </div>
-        </section>
-        <!-- Footer -->
-        <footer class="bg-white border-t border-outline-variant py-20">
-            <div class="max-w-container-max mx-auto px-margin-desktop">
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-20">
-                    <div class="lg:col-span-2">
-                        <span class="font-display-lg text-headline-md text-primary block mb-6">Thư viện Định chế
-                            Lexicon</span>
-                        <p class="text-on-surface-variant max-w-sm leading-relaxed">
-                            Cung cấp quyền truy cập toàn cầu vào các bộ sưu tập tài liệu học thuật và tài sản kỹ thuật
-                            số tốt nhất thế giới.
-                        </p>
-                    </div>
-                    <div>
-                        <h5 class="font-label-md uppercase tracking-widest text-primary mb-6">Liên kết nhanh</h5>
-                        <ul class="space-y-3">
-                            <li class=""><a class="text-on-surface-variant hover:text-primary transition-colors"
-                                    href="#">Danh mục số</a></li>
-                            <li class=""><a class="text-on-surface-variant hover:text-primary transition-colors"
-                                    href="#">Hướng dẫn nghiên cứu</a></li>
-                            <li class=""><a class="text-on-surface-variant hover:text-primary transition-colors"
-                                    href="#">Không gian &amp; Đặt chỗ</a></li>
-                        </ul>
-                    </div>
-                    <div>
-                        <h5 class="font-label-md uppercase tracking-widest text-primary mb-6">Hỗ trợ</h5>
-                        <ul class="space-y-3">
-                            <li class=""><a class="text-on-surface-variant hover:text-primary transition-colors"
-                                    href="#">Trung tâm trợ giúp</a></li>
-                            <li class=""><a class="text-on-surface-variant hover:text-primary transition-colors"
-                                    href="#">Khả năng tiếp cận</a></li>
-                            <li class=""><a class="text-on-surface-variant hover:text-primary transition-colors"
-                                    href="#">Bàn tiếp tân</a></li>
-                        </ul>
-                    </div>
-                </div>
-                <div
-                    class="flex flex-col md:flex-row justify-between items-center gap-6 pt-10 border-t border-outline-variant text-label-sm text-on-surface-variant/60 uppercase tracking-widest">
-                    <p class="">© 2024 THƯ VIỆN ĐỊNH CHẾ LEXICON. BẢO LƯU MỌI QUYỀN.</p>
-                    <div class="flex gap-8">
-                        <a class="hover:text-primary transition-colors" href="#">Bảo mật</a>
-                        <a class="hover:text-primary transition-colors" href="#">Điều khoản</a>
-                        <a class="hover:text-primary transition-colors" href="#">Sơ đồ trang web</a>
-                    </div>
-                </div>
+
+            <div class="empty-state" th:if="${books == null or books.isEmpty()}">
+                <h2>Kho sách đang được cập nhật</h2>
+                <p>Hãy quay lại sau hoặc thử tìm kiếm một đầu sách cụ thể.</p>
+                <a class="button button--secondary" th:href="@{/books/search(keyword='')}">Tra cứu sách</a>
             </div>
-        </footer>
-    </main>
-    <!-- Minimal FAB -->
-    <div class="fixed bottom-10 right-10 z-40">
-        <button
-            class="bg-primary text-on-primary w-12 h-12 flex items-center justify-center hover:bg-zinc-800 transition-colors shadow-sm">
-            <span class="material-symbols-outlined text-xl">question_answer</span>
-        </button>
-    </div>
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const navbar = document.querySelector('nav');
-            window.addEventListener('scroll', () => {
-                if (window.scrollY > 20) {
-                    navbar.classList.add('py-3', 'shadow-sm');
-                    navbar.classList.remove('py-5');
-                } else {
-                    navbar.classList.remove('py-3', 'shadow-sm');
-                    navbar.classList.add('py-5');
-                }
-            });
-        });
-    </script>
+        </div>
+    </section>
+
+    <section class="section" aria-labelledby="categories-title">
+        <div class="container">
+            <div class="section__header">
+                <h2 id="categories-title">Khám phá theo chủ đề</h2>
+            </div>
+            <nav class="category-list" aria-label="Chủ đề sách">
+                <a class="category-link"
+                   th:each="category : ${categories}"
+                   th:href="@{/books/search(keyword=${category.name})}"
+                   th:text="${category.name}">Khoa học</a>
+            </nav>
+        </div>
+    </section>
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
 </body>
-
 </html>

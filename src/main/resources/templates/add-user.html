@@ -1,195 +1,126 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
 <head>
-
-    <meta charset="UTF-8">
-
-    <title>Add User</title>
-
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Tạo tài khoản mới cho Thư viện Lexicon.">
+    <title>Thêm tài khoản | Lexicon Library</title>
+    <link rel="stylesheet" th:href="@{/css/lexicon.css}">
+    <script defer th:src="@{/js/lexicon.js}"></script>
 </head>
-
 <body>
-
-<h2>Add New User</h2>
-
-<hr>
-
-<a th:href="@{/admin/users}">
-
-    Back to User Management
-
-</a>
-
-<hr>
-
-<form th:action="@{/admin/users/add}"
-      th:object="${userDTO}"
-      method="post">
-
-    <table>
-
-        <tr>
-
-            <td>Username</td>
-
-            <td>
-
-                <input type="text"
-                       th:field="*{username}"
-                       minlength="4"
-                       maxlength="20"
-                       required>
-
-            </td>
-
-            <td>
-
-            <span
-                    th:if="${#fields.hasErrors('username')}"
-                    th:errors="*{username}">
-
-            </span>
-
-            </td>
-
-        </tr>
-
-        <tr>
-
-            <td>Password</td>
-
-            <td>
-
-                <input type="password"
-                       th:field="*{password}"
-                       minlength="6"
-                       required>
-
-            </td>
-
-            <td>
-
-            <span
-                    th:if="${#fields.hasErrors('password')}"
-                    th:errors="*{password}">
-
-            </span>
-
-            </td>
-
-        </tr>
-
-        <tr>
-
-            <td>Full Name</td>
-
-            <td>
-
-                <input type="text"
-                       th:field="*{fullName}"
-                       minlength="5"
-                       maxlength="50"
-                       required>
-
-            </td>
-
-            <td>
-
-            <span
-                    th:if="${#fields.hasErrors('fullName')}"
-                    th:errors="*{fullName}">
-
-            </span>
-
-            </td>
-
-        </tr>
-
-        <tr>
-
-            <td>Role</td>
-
-            <td>
-
-                <select th:field="*{role}">
-
-                    <option value="">-- Select Role --</option>
-
-                    <option value="admin">Admin</option>
-
-                    <option value="manager">Manager</option>
-
-                    <option value="customer">Customer</option>
-
-                </select>
-
-            </td>
-
-            <td>
-
-            <span th:if="${#fields.hasErrors('role')}"
-                  th:errors="*{role}">
-
-            </span>
-
-            </td>
-
-        </tr>
-
-        <tr>
-
-            <td>Status</td>
-
-            <td>
-
-                <select th:field="*{status}">
-
-                    <option value="">-- Select Status --</option>
-
-                    <option value="active">Active</option>
-
-                    <option value="locked">Locked</option>
-
-                </select>
-
-            </td>
-
-            <td>
-
-            <span th:if="${#fields.hasErrors('status')}"
-                  th:errors="*{status}">
-
-            </span>
-
-            </td>
-
-        </tr>
-
-        <tr>
-
-            <td colspan="3">
-
-                <button type="submit">
-
-                    Save
-
-                </button>
-
-                <a th:href="@{/admin/users}">
-
-                    Cancel
-
-                </a>
-
-            </td>
-
-        </tr>
-
-    </table>
-
-</form>
-
+<a class="skip-link" href="#main-content">Bỏ qua điều hướng</a>
+<header th:replace="~{fragments/layout :: header(${user}, 'admin')}"></header>
+
+<main id="main-content">
+    <section class="page-heading">
+        <div class="container admin-form-shell">
+            <p class="eyebrow">Quản trị hệ thống</p>
+            <h1>Thêm tài khoản</h1>
+            <p>Tạo quyền truy cập mới và xác định vai trò ban đầu cho người dùng.</p>
+        </div>
+    </section>
+
+    <section class="section section--white">
+        <div class="container admin-form-shell">
+            <p>
+                <a class="text-link" th:href="@{/admin/users}">← Quay lại danh sách</a>
+            </p>
+
+            <form class="admin-form"
+                  th:action="@{/admin/users/add}"
+                  th:object="${userDTO}"
+                  method="post">
+
+                <div class="field">
+                    <label for="username">Tên đăng nhập</label>
+                    <input id="username"
+                           type="text"
+                           th:field="*{username}"
+                           minlength="4"
+                           maxlength="20"
+                           autocomplete="username"
+                           placeholder="Từ 4 đến 20 ký tự"
+                           required
+                           autofocus>
+                    <span class="field-error"
+                          th:if="${#fields.hasErrors('username')}"
+                          th:errors="*{username}">Tên đăng nhập không hợp lệ.</span>
+                </div>
+
+                <div class="field">
+                    <label for="password">Mật khẩu ban đầu</label>
+                    <div class="password-field">
+                        <input id="password"
+                               type="password"
+                               th:field="*{password}"
+                               minlength="6"
+                               autocomplete="new-password"
+                               placeholder="Tối thiểu 6 ký tự"
+                               required>
+                        <button type="button"
+                                data-password-toggle
+                                aria-controls="password"
+                                aria-pressed="false"
+                                aria-label="Hiện mật khẩu">Hiện</button>
+                    </div>
+                    <span class="field-error"
+                          th:if="${#fields.hasErrors('password')}"
+                          th:errors="*{password}">Mật khẩu không hợp lệ.</span>
+                </div>
+
+                <div class="field field--wide">
+                    <label for="fullName">Họ và tên</label>
+                    <input id="fullName"
+                           type="text"
+                           th:field="*{fullName}"
+                           minlength="5"
+                           maxlength="50"
+                           autocomplete="name"
+                           placeholder="Họ tên đầy đủ của người dùng"
+                           required>
+                    <span class="field-error"
+                          th:if="${#fields.hasErrors('fullName')}"
+                          th:errors="*{fullName}">Họ tên không hợp lệ.</span>
+                </div>
+
+                <div class="field">
+                    <label for="role">Vai trò</label>
+                    <select id="role" th:field="*{role}" required>
+                        <option value="customer">Độc giả</option>
+                        <option value="manager">Thủ thư</option>
+                        <option value="admin">Quản trị viên</option>
+                    </select>
+                    <span class="field-error"
+                          th:if="${#fields.hasErrors('role')}"
+                          th:errors="*{role}">Hãy chọn vai trò.</span>
+                </div>
+
+                <div class="field">
+                    <label for="status">Trạng thái</label>
+                    <select id="status" th:field="*{status}" required>
+                        <option value="active">Hoạt động</option>
+                        <option value="locked">Khóa</option>
+                    </select>
+                    <span class="field-error"
+                          th:if="${#fields.hasErrors('status')}"
+                          th:errors="*{status}">Hãy chọn trạng thái.</span>
+                </div>
+
+                <p class="form-note">
+                    Tài khoản có vai trò quản trị viên có thể thay đổi quyền và trạng thái
+                    của những tài khoản khác.
+                </p>
+
+                <div class="admin-form__actions">
+                    <button class="button" type="submit">Tạo tài khoản</button>
+                    <a class="button button--secondary" th:href="@{/admin/users}">Hủy</a>
+                </div>
+            </form>
+        </div>
+    </section>
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
 </body>
-
 </html>

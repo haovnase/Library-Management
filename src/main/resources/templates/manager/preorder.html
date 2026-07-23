@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Quản lý yêu cầu đặt trước tại Thư viện Lexicon.">
+    <title>Quản lý đặt trước | Lexicon Library</title>
+    <link rel="stylesheet" th:href="@{/css/lexicon.css}">
+    <script defer th:src="@{/js/lexicon.js}"></script>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Bỏ qua điều hướng</a>
+<header th:replace="~{fragments/layout :: header(${user}, 'manager')}"></header>
+
+<main id="main-content">
+    <section class="page-heading">
+        <div class="container">
+            <p class="eyebrow">Nghiệp vụ thủ thư</p>
+            <h1>Yêu cầu đặt trước</h1>
+            <p>Cập nhật yêu cầu từ lúc chờ xử lý đến khi độc giả nhận sách.</p>
+        </div>
+    </section>
+
+    <section class="section section--white">
+        <div class="container">
+            <div class="results-toolbar">
+                <p>
+                    <strong th:text="${preOrderBooks != null ? preOrderBooks.size() : 0}">0</strong>
+                    yêu cầu
+                </p>
+                <a class="text-link" th:href="@{/manager/dashboard}">← Bảng điều khiển</a>
+            </div>
+
+            <div class="table-wrap" th:if="${preOrderBooks != null and !preOrderBooks.isEmpty()}">
+                <table class="data-table">
+                    <thead>
+                    <tr>
+                        <th scope="col">Mã</th>
+                        <th scope="col">Độc giả</th>
+                        <th scope="col">Sách</th>
+                        <th scope="col">Ngày đặt</th>
+                        <th scope="col">Trạng thái</th>
+                        <th scope="col">Thao tác</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="preOrder : ${preOrderBooks}">
+                        <td class="meta" th:text="${preOrder.id}">P0001</td>
+                        <td>
+                            <strong th:text="${preOrder.customer.user.fullName}">Độc giả</strong>
+                            <div class="meta" th:text="${preOrder.customer.id}">C001</div>
+                        </td>
+                        <td>
+                            <a class="text-link"
+                               th:href="@{/books/{id}(id=${preOrder.book.id})}"
+                               th:text="${preOrder.book.bookName}">Tên sách</a>
+                        </td>
+                        <td th:text="${#temporals.format(preOrder.preOrderDate, 'dd/MM/yyyy')}">01/01/2026</td>
+                        <td>
+                            <span class="status"
+                                  th:classappend="${preOrder.status == 'Ready' or preOrder.status == 'Completed'}
+                                      ? ' status--success' :
+                                      (${preOrder.status == 'Cancelled'} ? ' status--error' : ' status--warning')"
+                                  th:text="${preOrder.status == 'Waiting'} ? 'Đang chờ' :
+                                           (${preOrder.status == 'Ready'} ? 'Sẵn sàng nhận' :
+                                           (${preOrder.status == 'Completed'} ? 'Đã hoàn tất' : 'Đã hủy'))">
+                                Đang chờ
+                            </span>
+                        </td>
+                        <td>
+                            <div class="actions">
+                                <form th:if="${preOrder.status == 'Waiting'}"
+                                      th:action="@{/manager/preorder/ready}"
+                                      method="post">
+                                    <input type="hidden" name="id" th:value="${preOrder.id}">
+                                    <button class="button" type="submit">Sẵn sàng</button>
+                                </form>
+                                <form th:if="${preOrder.status == 'Ready'}"
+                                      th:action="@{/manager/preorder/complete}"
+                                      method="post">
+                                    <input type="hidden" name="id" th:value="${preOrder.id}">
+                                    <button class="button" type="submit">Hoàn tất</button>
+                                </form>
+                                <form th:if="${preOrder.status != 'Completed' and preOrder.status != 'Cancelled'}"
+                                      th:action="@{/manager/preorder/cancel}"
+                                      method="post">
+                                    <input type="hidden" name="id" th:value="${preOrder.id}">
+                                    <button class="button button--danger"
+                                            type="submit"
+                                            data-confirm="Hủy yêu cầu đặt trước này?">Hủy</button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="empty-state"
+                 th:if="${preOrderBooks == null or preOrderBooks.isEmpty()}">
+                <h2>Chưa có yêu cầu đặt trước</h2>
+                <p>Các yêu cầu mới của độc giả sẽ xuất hiện tại đây.</p>
+                <a class="button button--secondary" th:href="@{/manager/dashboard}">Về bảng điều khiển</a>
+            </div>
+        </div>
+    </section>
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>

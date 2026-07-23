@@ -1,293 +1,105 @@
 <!DOCTYPE html>
-
-<html xmlns:th="http://www.thymeleaf.org" class="scroll-smooth" lang="vi"
-    style="width: 1280px; height: 900px; position: relative;">
-
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="utf-8" />
-    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-    <title>Thư viện Lexicon | Trang Search</title>
-    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Roboto:wght@400;500;700&amp;display=swap"
-        rel="stylesheet" />
-    <link
-        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
-        rel="stylesheet" />
-    <style>
-        .material-symbols-outlined {
-            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
-        }
-
-        .hide-scrollbar::-webkit-scrollbar {
-            display: none;
-        }
-
-        .hide-scrollbar {
-            -ms-overflow-style: none;
-            scrollbar-width: none;
-        }
-    </style>
-    <!-- Tailwind Configuration -->
-    <script id="tailwind-config">
-        tailwind.config = {
-            darkMode: "class",
-            theme: {
-                extend: {
-                    "colors": {
-                        "primary-container": "#131b2e",
-                        "surface": "#ffffff",
-                        "on-primary-container": "#7c839b",
-                        "surface-container-low": "#f8fafc",
-                        "on-tertiary": "#ffffff",
-                        "tertiary": "#000000",
-                        "inverse-primary": "#bec6e0",
-                        "on-secondary": "#ffffff",
-                        "on-secondary-fixed": "#331200",
-                        "secondary-container": "#fd8a42",
-                        "on-secondary-fixed-variant": "#763300",
-                        "on-error": "#ffffff",
-                        "surface-variant": "#f1f5f9",
-                        "inverse-surface": "#2d3133",
-                        "background": "#ffffff",
-                        "tertiary-fixed": "#d3e4fe",
-                        "outline-variant": "#e2e8f0",
-                        "primary-fixed-dim": "#bec6e0",
-                        "on-error-container": "#93000a",
-                        "surface-container-lowest": "#ffffff",
-                        "tertiary-fixed-dim": "#b7c8e1",
-                        "surface-container-highest": "#e2e8f0",
-                        "error-container": "#ffdad6",
-                        "on-primary-fixed-variant": "#3f465c",
-                        "surface-container-high": "#f1f5f9",
-                        "inverse-on-surface": "#eff1f3",
-                        "error": "#ba1a1a",
-                        "on-primary": "#ffffff",
-                        "on-surface-variant": "#64748b",
-                        "tertiary-container": "#0b1c30",
-                        "surface-dim": "#f1f5f9",
-                        "on-primary-fixed": "#131b2e",
-                        "primary": "#000000",
-                        "on-tertiary-fixed-variant": "#38485d",
-                        "on-background": "#0f172a",
-                        "on-tertiary-container": "#75859d",
-                        "on-surface": "#0f172a",
-                        "surface-tint": "#565e74",
-                        "secondary-fixed-dim": "#ffb68e",
-                        "surface-container": "#f8fafc",
-                        "on-secondary-container": "#682c00",
-                        "on-tertiary-fixed": "#0b1c30",
-                        "secondary": "#9b4500",
-                        "outline": "#94a3b8",
-                        "surface-bright": "#ffffff",
-                        "secondary-fixed": "#ffdbca",
-                        "primary-fixed": "#dae2fd"
-                    },
-                    "borderRadius": {
-                        "DEFAULT": "0px",
-                        "lg": "0px",
-                        "xl": "0px",
-                        "full": "9999px"
-                    },
-                    "spacing": {
-                        "unit": "8px",
-                        "gutter": "24px",
-                        "margin-desktop": "48px",
-                        "margin-mobile": "20px",
-                        "container-max": "1140px"
-                    },
-                    "fontFamily": {
-                        "display-lg": ["Inter"],
-                        "body-md": ["Inter"],
-                        "headline-lg": ["Inter"],
-                        "headline-md": ["Inter"],
-                        "body-lg": ["Inter"],
-                        "headline-lg-mobile": ["Inter"],
-                        "label-sm": ["Inter"],
-                        "label-md": ["Inter"]
-                    },
-                    "fontSize": {
-                        "display-lg": ["40px", { "lineHeight": "48px", "fontWeight": "700" }],
-                        "body-md": ["15px", { "lineHeight": "24px", "fontWeight": "400" }],
-                        "headline-lg": ["28px", { "lineHeight": "36px", "fontWeight": "700" }],
-                        "headline-md": ["20px", { "lineHeight": "28px", "fontWeight": "600" }],
-                        "body-lg": ["17px", { "lineHeight": "26px", "fontWeight": "400" }],
-                        "headline-lg-mobile": ["24px", { "lineHeight": "32px", "fontWeight": "700" }],
-                        "label-sm": ["11px", { "lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "500" }],
-                        "label-md": ["13px", { "lineHeight": "20px", "letterSpacing": "0.03em", "fontWeight": "600" }]
-                    }
-                },
-            },
-        }
-    </script>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Kết quả tra cứu sách tại Thư viện Lexicon.">
+    <title>Kết quả tìm kiếm | Lexicon Library</title>
+    <link rel="stylesheet" th:href="@{/css/lexicon.css}">
+    <script defer th:src="@{/js/lexicon.js}"></script>
 </head>
+<body>
+<a class="skip-link" href="#main-content">Bỏ qua điều hướng</a>
+<header th:replace="~{fragments/layout :: header(${user}, 'search')}"></header>
 
-<body class="bg-surface font-body-md text-on-surface antialiased">
-    <!-- Top Navigation -->
-    <nav class="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-md border-b border-outline-variant">
-        <div class="flex justify-between items-center px-margin-desktop py-5 w-full max-w-container-max mx-auto">
-            <div class="flex items-center gap-10">
-                <span class="font-display-lg text-headline-md text-primary tracking-tight">Lexicon Library</span>
-            </div>
-            <form class="hidden md:flex flex-1 max-w-xl relative" action="/books/search" method="get">
-
-                <span
-                    class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant">
-                    search
-                </span>
-
-                <input name="keyword"
-                    class="w-full h-[56px] bg-[#F1F5F9] border-none rounded-lg pl-12 pr-4 focus:ring-2 focus:ring-primary focus:bg-white transition-all text-body-md"
-                    placeholder="Tìm kiếm sách, tác giả, ISBN..." th:value="${keyword}" type="text" />
-
-                <button type="submit"
-                    class="absolute right-2 top-2 bottom-2 px-6 bg-primary text-on-primary font-label-md hover:bg-zinc-800 transition-colors rounded-md">
-                    Tìm
-                </button>
+<main id="main-content">
+    <section class="page-heading">
+        <div class="container">
+            <p class="eyebrow">Danh mục thư viện</p>
+            <h1>Kết quả tra cứu</h1>
+            <form class="search-form" method="get" th:action="@{/books/search}" role="search">
+                <label class="skip-link" for="results-search">Tìm sách</label>
+                <input id="results-search"
+                       name="keyword"
+                       type="search"
+                       autocomplete="off"
+                       th:value="${keyword}"
+                       placeholder="Tên sách, tác giả hoặc ISBN…">
+                <button class="button" type="submit">Tìm kiếm</button>
             </form>
-            <div class="flex items-center gap-6">
-                <button
-                    class="material-symbols-outlined text-on-surface-variant hover:text-primary transition-colors">notifications</button>
-                <div th:if="${user != null}" class="flex items-center gap-4">
-                    <div class="relative group">
-                        <button
-                            class="flex items-center gap-3 px-3 py-2 rounded-full hover:bg-surface-container transition-colors focus:outline-none">
-                            <div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center">
-                                <span class="material-symbols-outlined text-on-primary text-[20px]">person</span>
+        </div>
+    </section>
+
+    <section class="section section--white">
+        <div class="container search-shell">
+            <aside class="filters" aria-label="Gợi ý tìm kiếm">
+                <div class="filters__group">
+                    <h2>Chủ đề phổ biến</h2>
+                    <nav class="filters__links">
+                        <a th:href="@{/books/search(keyword='Khoa học')}">Khoa học</a>
+                        <a th:href="@{/books/search(keyword='Văn học')}">Văn học</a>
+                        <a th:href="@{/books/search(keyword='Lịch sử')}">Lịch sử</a>
+                        <a th:href="@{/books/search(keyword='Công nghệ')}">Công nghệ</a>
+                    </nav>
+                </div>
+                <div class="filters__group">
+                    <h2>Tìm theo dữ liệu</h2>
+                    <p>
+                        Bạn có thể nhập tên sách, tác giả hoặc mã ISBN vào ô tìm kiếm.
+                    </p>
+                </div>
+            </aside>
+
+            <div>
+                <div class="results-toolbar">
+                    <p>
+                        <strong th:text="${books != null ? books.size() : 0}">0</strong>
+                        kết quả
+                        <span th:if="${keyword != null and !#strings.isEmpty(keyword)}">
+                            cho “<span th:text="${keyword}">từ khóa</span>”
+                        </span>
+                    </p>
+                    <span class="meta">Sắp xếp theo dữ liệu thư viện</span>
+                </div>
+
+                <div class="book-grid" th:if="${books != null and !books.isEmpty()}">
+                    <article class="book-card" th:each="book : ${books}">
+                        <a class="book-card__cover"
+                           th:href="@{/books/{id}(id=${book.id})}"
+                           th:aria-label="|Xem chi tiết ${book.bookName}|">
+                            <img th:src="${book.bookJacket != null and !#strings.isEmpty(book.bookJacket)
+                                         ? book.bookJacket : '/other/book-placeholder.svg'}"
+                                 th:alt="|Bìa sách ${book.bookName}|">
+                        </a>
+                        <div class="book-card__body">
+                            <span class="meta" th:text="${book.type ?: 'Tài liệu'}">Tài liệu</span>
+                            <h3>
+                                <a th:href="@{/books/{id}(id=${book.id})}"
+                                   th:text="${book.bookName}">Tên sách</a>
+                            </h3>
+                            <p class="book-card__author" th:text="${book.author}">Tác giả</p>
+                            <div class="book-card__metadata">
+                                <div th:text="|Năm: ${book.year ?: '—'}|">Năm: —</div>
+                                <div th:text="|ISBN: ${book.isbn ?: '—'}|">ISBN: —</div>
+                                <div th:text="|Số lượng: ${book.quantity ?: 0}|">Số lượng: 0</div>
                             </div>
-                            <span class="hidden md:block font-label-md text-on-surface" th:text="${user.fullName}">Prof.
-                                Henderson</span>
-                            <span class="material-symbols-outlined text-on-surface-variant">expand_more</span>
-                        </button>
-                        <!-- Dropdown Menu -->
-                        <div
-                            class="absolute right-0 mt-2 w-56 bg-white border border-outline-variant shadow-sm opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50">
-                            <div class="py-2">
-                                <a class="block px-6 py-3 text-label-md text-on-surface hover:bg-surface-container transition-colors"
-                                    href="/borrow">Sách đang mượn</a>
-                                <a class="block px-6 py-3 text-label-md text-on-surface hover:bg-surface-container transition-colors"
-                                    href="/favorites">Danh sách yêu thích</a>
-                                <div class="border-t border-outline-variant my-1"></div>
-                                <a class="block px-6 py-3 text-label-md text-secondary hover:bg-surface-container transition-colors"
-                                    th:href="@{/logout}">Đăng xuất</a>
-                            </div>
+                            <a class="button button--secondary"
+                               th:href="@{/books/{id}(id=${book.id})}">Chi tiết</a>
                         </div>
-                    </div>
+                    </article>
                 </div>
-                <a th:unless="${user != null}" th:href="@{/login}"
-                    class="bg-primary text-on-primary px-6 py-2 font-label-md hover:bg-zinc-800 transition-colors">Đăng
-                    nhập</a>
+
+                <div class="empty-state" th:if="${books == null or books.isEmpty()}">
+                    <h2>Chưa tìm thấy tài liệu phù hợp</h2>
+                    <p>Kiểm tra chính tả, thử tên tác giả hoặc tìm bằng mã ISBN.</p>
+                    <a class="button button--secondary"
+                       th:href="@{/books/search(keyword='')}">Xem toàn bộ sách</a>
+                </div>
             </div>
         </div>
-    </nav>
-    <main class="pt-20 mt-24 max-w-container-max mx-auto px-margin-desktop py-12">
-
-    <!-- Search Header -->
-    <div class="mb-10">
-        <p class="text-on-surface-variant font-label-sm uppercase tracking-widest mb-2">
-            Tìm kiếm
-        </p>
-
-        <h2 class="font-headline-lg text-primary">
-            Kết quả tìm kiếm cho
-            <span class="italic font-normal" th:text="${keyword}">keyword</span>
-        </h2>
-
-        <p class="text-on-surface-variant mt-2 font-body-md">
-            Tìm thấy <span th:text="${books.size()}"></span> tài liệu phù hợp.
-        </p>
-    </div>
-
-    <!-- Results Grid -->
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-gutter">
-
-        <div th:each="book : ${books}"
-             class="bg-surface-container-lowest border border-outline-variant p-5 flex gap-5 rounded">
-
-            <!-- Cover -->
-            <div class="w-32 h-48 shrink-0 bg-surface-container overflow-hidden rounded shadow-sm">
-                <img class="w-full h-full object-cover"
-                     th:src="${book.bookJacket}"
-                     th:alt="${book.bookName}">
-            </div>
-
-            <!-- Info -->
-            <div class="flex flex-col justify-between w-full">
-
-                <div>
-                    <!-- Type + Year -->
-                    <div class="flex items-center gap-2 mb-2">
-
-                        <span class="px-2 py-0.5 text-[11px] font-bold rounded uppercase bg-surface-container text-on-surface-variant"
-                              th:text="${book.type}">
-                            TYPE
-                        </span>
-
-                        <span class="text-on-surface-variant text-[12px]">
-                            • <span th:text="${book.year}"></span>
-                        </span>
-                    </div>
-
-                    <!-- Title -->
-                    <h3 class="font-headline-md text-[18px] text-primary mb-1"
-                        th:text="${book.bookName}">
-                        Book Name
-                    </h3>
-
-                    <!-- Author -->
-                    <p class="text-on-surface-variant text-body-md italic"
-                       th:text="${book.author}">
-                        Author
-                    </p>
-
-                    <!-- ISBN -->
-                    <p class="text-xs text-on-surface-variant mt-2">
-                        ISBN: <span th:text="${book.isbn}"></span>
-                    </p>
-
-                </div>
-
-                <!-- Bottom -->
-                <div class="flex justify-between items-center mt-4">
-
-                    <p class="text-sm text-on-surface-variant">
-                        Qty: <span th:text="${book.quantity}"></span>
-                    </p>
-
-                    <a th:href="@{'/books/' + ${book.id}}"
-                       class="text-secondary border border-secondary text-label-sm px-4 py-2 rounded hover:bg-secondary-fixed/10 transition-colors">
-                        Chi tiết
-                    </a>
-
-                </div>
-
-            </div>
-        </div>
-
-    </div>
-
+    </section>
 </main>
-    <!-- Minimal FAB -->
-    <div class="fixed bottom-10 right-10 z-40">
-        <button
-            class="bg-primary text-on-primary w-12 h-12 flex items-center justify-center hover:bg-zinc-800 transition-colors shadow-sm">
-            <span class="material-symbols-outlined text-xl">question_answer</span>
-        </button>
-    </div>
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const navbar = document.querySelector('nav');
-            window.addEventListener('scroll', () => {
-                if (window.scrollY > 20) {
-                    navbar.classList.add('py-3', 'shadow-sm');
-                    navbar.classList.remove('py-5');
-                } else {
-                    navbar.classList.remove('py-3', 'shadow-sm');
-                    navbar.classList.add('py-5');
-                }
-            });
-        });
-    </script>
-</body>
 
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
 </html>
