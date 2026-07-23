@@ -1,17 +1,11 @@
 package com.library.mvc.librarymanagement.controller;
 
-import com.library.mvc.librarymanagement.entity.Book;
-import com.library.mvc.librarymanagement.entity.BorrowBook;
-import com.library.mvc.librarymanagement.entity.Customer;
-import com.library.mvc.librarymanagement.entity.User;
+import com.library.mvc.librarymanagement.entity.*;
 import com.library.mvc.librarymanagement.repository.BookRepository;
 import com.library.mvc.librarymanagement.repository.BorrowBookRepository;
 import com.library.mvc.librarymanagement.repository.CustomerRepository;
 import com.library.mvc.librarymanagement.repository.UserRepository;
-import com.library.mvc.librarymanagement.service.BookService;
-import com.library.mvc.librarymanagement.service.BorrowBookService;
-import com.library.mvc.librarymanagement.service.CustomerService;
-import com.library.mvc.librarymanagement.service.UserService;
+import com.library.mvc.librarymanagement.service.*;
 
 import jakarta.servlet.http.HttpSession;
 import jakarta.websocket.Session;
@@ -24,6 +18,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.SessionAttribute;
 import org.springframework.web.bind.annotation.SessionAttributes;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -37,15 +32,18 @@ public class HomeController {
     private final BorrowBookService borrowBookService;
     private final CustomerService customerService;
     private final UserService userService;
+    private final PreOrderBookService preOrderBookService;
 
     public HomeController(BookService bookService,
             BorrowBookService borrowBookService,
             CustomerService customerService,
-            UserService userService) {
+            UserService userService,
+                          PreOrderBookService preOrderBookService) {
         this.bookService = bookService;
         this.borrowBookService = borrowBookService;
         this.customerService = customerService;
         this.userService = userService;
+        this.preOrderBookService = preOrderBookService;
     }
 
     @GetMapping("/")
@@ -238,5 +236,127 @@ public class HomeController {
         }
 
         return "manager/dashboard";
+    }
+    // đặt trước sách
+    @PostMapping("/book/preorder")
+    public String preOrderBook(
+            @RequestParam String bookId,
+            HttpSession session,
+            RedirectAttributes redirectAttributes) {
+
+        User user = (User) session.getAttribute("user");
+
+        if (user == null) {
+            return "redirect:/login";
+        }
+
+        Customer customer =
+                customerService.findByUserId(user.getId());
+
+        Book book = bookService.findById(bookId);
+
+        boolean existed = preOrderBookService
+                .findByCustomer(customer)
+                .stream()
+                .anyMatch(preOrder ->
+                        preOrder.getBook().getId().equals(bookId)
+                                && ("Waiting".equals(preOrder.getStatus())
+                                || "Ready".equals(preOrder.getStatus()))
+                );
+
+        if (existed) {
+            redirectAttributes.addFlashAttribute(
+                    "error",
+                    "Bạn đã đặt trước sách này."
+            );
+
+            return "redirect:/book";
+        }
+
+        long nextNumber =
+                preOrderBookService.findAll().size() + 1;
+
+        String preOrderId =
+                "P" + String.format("%04d", nextNumber);
+
+        PreOrderBook preOrderBook = new PreOrderBook();
+
+        preOrderBook.setId(preOrderId);
+        preOrderBook.setBook(book);
+        preOrderBook.setCustomer(customer);
+        preOrderBook.setPreOrderDate(LocalDate.now());
+        preOrderBook.setStatus("Waiting");
+
+        preOrderBookService.save(preOrderBook);
+
+        redirectAttributes.addFlashAttribute(
+                "success",
+                "Đặt trước sách thành công."
+        );
+
+        return "redirect:/book";
+    }
+
+    //Xem danh sách đặt trước của mình
+
+    @GetMapping("/preorder")
+    public String getMyPreOrders(
+            HttpSession session,
+            Model model) {
+
+        User user = (User) session.getAttribute("user");
+
+        if (user == null) {
+            return "redirect:/login";
+        }
+
+        Customer customer =
+                customerService.findByUserId(user.getId());
+
+        model.addAttribute(
+                "preOrderBooks",
+                preOrderBookService.findByCustomer(customer)
+        );
+
+        return "preorder";
+    }
+
+    //Khách hủy đơn
+
+    @PostMapping("/preorder/cancel")
+    public String cancelMyPreOrder(
+            @RequestParam String id,
+            HttpSession session) {
+
+        User user = (User) session.getAttribute("user");
+
+        if (user == null) {
+            return "redirect:/login";
+        }
+
+        Customer customer =
+                customerService.findByUserId(user.getId());
+
+        PreOrderBook preOrderBook =
+                preOrderBookService.findById(id);
+
+        if (!preOrderBook.getCustomer()
+                .getId()
+                .equals(customer.getId())) {
+
+            return "redirect:/preorder";
+        }
+
+        if ("Completed".equals(preOrderBook.getStatus())
+                || "Cancelled".equals(preOrderBook.getStatus())) {
+
+            return "redirect:/preorder";
+        }
+
+        preOrderBook.setStatus("Cancelled");
+
+        preOrderBookService.save(preOrderBook);
+
+        return "redirect:/preorder";
     }
 }

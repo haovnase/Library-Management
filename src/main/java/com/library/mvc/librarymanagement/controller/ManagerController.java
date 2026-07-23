@@ -1,13 +1,11 @@
 package com.library.mvc.librarymanagement.controller;
 
-import com.library.mvc.librarymanagement.entity.Book;
-import com.library.mvc.librarymanagement.entity.BorrowBook;
-import com.library.mvc.librarymanagement.entity.Customer;
-import com.library.mvc.librarymanagement.entity.User;
+import com.library.mvc.librarymanagement.entity.*;
 import com.library.mvc.librarymanagement.repository.BookRepository;
 import com.library.mvc.librarymanagement.repository.BorrowBookRepository;
 import com.library.mvc.librarymanagement.repository.CustomerRepository;
 
+import com.library.mvc.librarymanagement.service.PreOrderBookService;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -41,12 +39,14 @@ public class ManagerController {
     private final BookRepository bookRepository;
     private final CustomerRepository customerRepository;
     private final BorrowBookRepository borrowBookRepository;
+    private final PreOrderBookService preOrderBookService;
 
     public ManagerController(BookRepository bookRepository, CustomerRepository customerRepository,
-                             BorrowBookRepository borrowBookRepository) {
+                             BorrowBookRepository borrowBookRepository, PreOrderBookService preOrderBookService) {
         this.bookRepository = bookRepository;
         this.customerRepository = customerRepository;
         this.borrowBookRepository = borrowBookRepository;
+        this.preOrderBookService = preOrderBookService;
     }
 
     @GetMapping("/manager/dashboard")
@@ -349,6 +349,72 @@ public class ManagerController {
         model.addAttribute("borrowBooks", borrowBooks);
 
         return "manager/dashboard";
+    }
+
+    //xem danh sách đặt trước
+
+    @GetMapping("/manager/preorder")
+    public String getPreOrderBooks(Model model) {
+
+        model.addAttribute(
+                "preOrderBooks",
+                preOrderBookService.findAll()
+        );
+
+        return "manager/preorder";
+    }
+
+    // chuyển đơn sang Ready
+
+    @PostMapping("/manager/preorder/ready")
+    public String readyPreOrder(
+            @RequestParam String id) {
+
+        PreOrderBook preOrderBook =
+                preOrderBookService.findById(id);
+
+        if ("Waiting".equals(preOrderBook.getStatus())) {
+            preOrderBook.setStatus("Ready");
+            preOrderBookService.save(preOrderBook);
+        }
+
+        return "redirect:/manager/preorder";
+    }
+
+    // chuyển đơn sang complete
+
+    @PostMapping("/manager/preorder/complete")
+    public String completePreOrder(
+            @RequestParam String id) {
+
+        PreOrderBook preOrderBook =
+                preOrderBookService.findById(id);
+
+        if ("Ready".equals(preOrderBook.getStatus())) {
+            preOrderBook.setStatus("Completed");
+            preOrderBookService.save(preOrderBook);
+        }
+
+        return "redirect:/manager/preorder";
+    }
+
+    // hủy đơn(Cancel)
+
+    @PostMapping("/manager/preorder/cancel")
+    public String cancelPreOrder(
+            @RequestParam String id) {
+
+        PreOrderBook preOrderBook =
+                preOrderBookService.findById(id);
+
+        if (!"Completed".equals(preOrderBook.getStatus())
+                && !"Cancelled".equals(preOrderBook.getStatus())) {
+
+            preOrderBook.setStatus("Cancelled");
+            preOrderBookService.save(preOrderBook);
+        }
+
+        return "redirect:/manager/preorder";
     }
 
 }
