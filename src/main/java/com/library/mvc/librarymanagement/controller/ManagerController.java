@@ -20,23 +20,21 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
 import java.util.List;
 
 @Controller
 @SessionAttributes({
-    "totalMembers",
-    "booksBorrowing",
-    "overdueBooks",
-    "newBooksThisMonth",
-    "borrow"
+        "totalMembers",
+        "booksBorrowing",
+        "overdueBooks",
+        "newBooksThisMonth",
+        "borrow"
 })
 public class ManagerController {
 
@@ -45,7 +43,7 @@ public class ManagerController {
     private final BorrowBookRepository borrowBookRepository;
 
     public ManagerController(BookRepository bookRepository, CustomerRepository customerRepository,
-            BorrowBookRepository borrowBookRepository) {
+                             BorrowBookRepository borrowBookRepository) {
         this.bookRepository = bookRepository;
         this.customerRepository = customerRepository;
         this.borrowBookRepository = borrowBookRepository;
@@ -53,7 +51,7 @@ public class ManagerController {
 
     @GetMapping("/manager/dashboard")
     public String dashboard(@SessionAttribute(name = "user", required = false) User user,
-            Model model) {
+                            Model model) {
         if (user == null || !"manager".equalsIgnoreCase(user.getRole())) {
             return "redirect:/login";
         }
@@ -77,18 +75,18 @@ public class ManagerController {
 
     @PostMapping("/manager/books/add")
     public String addBook(@SessionAttribute(name = "user", required = false) User user,
-            @RequestParam("bookName") String bookName,
-            @RequestParam("author") String author,
-            @RequestParam("isbn") String isbn,
-            @RequestParam("type") String type,
-            @RequestParam("language") String language,
-            @RequestParam("year") Integer year,
-            @RequestParam("publisher") String publisher,
-            @RequestParam("quantity") Integer quantity,
-            @RequestParam("location") String location,
-            @RequestParam("description") String description,
-            @RequestParam(value = "bookJacket", required = false) MultipartFile bookJacket,
-            RedirectAttributes redirectAttributes) {
+                          @RequestParam("bookName") String bookName,
+                          @RequestParam("author") String author,
+                          @RequestParam("isbn") String isbn,
+                          @RequestParam("type") String type,
+                          @RequestParam("language") String language,
+                          @RequestParam("year") Integer year,
+                          @RequestParam("publisher") String publisher,
+                          @RequestParam("quantity") Integer quantity,
+                          @RequestParam("location") String location,
+                          @RequestParam("description") String description,
+                          @RequestParam(value = "bookJacket", required = false) MultipartFile bookJacket,
+                          RedirectAttributes redirectAttributes) {
         if (user == null || !"manager".equalsIgnoreCase(user.getRole())) {
             return "redirect:/login";
         }
@@ -124,7 +122,7 @@ public class ManagerController {
         if (year == null || year < 1800 || year > LocalDate.now().getYear() + 1) {
             errorMessage.append("Năm xuất bản phải từ 1800 đến năm hiện tại + 1. ");
         }
-        
+
         if (description == null || description.trim().isEmpty()) {
             errorMessage.append("Tóm tắt nội dung không được để trống. ");
         }
@@ -260,19 +258,26 @@ public class ManagerController {
     }
 
     @PostMapping("/manager/return/check")
-    public String checkReturn(@RequestParam("userId") String CustomeID, Model model, User user) {
+    public String checkReturn(
+            @SessionAttribute(name = "user", required = false) User user,
+            @RequestParam("userId") String customerId,
+            Model model) {
 
-        // xử lý tìm user
-        Customer customer = customerRepository.findById(CustomeID).orElse(null);
-        
+        if (user == null || !"manager".equalsIgnoreCase(user.getRole())) {
+            return "redirect:/login";
+        }
+
+        Customer customer = customerRepository.findById(customerId).orElse(null);
+
         model.addAttribute("customer", customer);
         model.addAttribute("user", user);
+        model.addAttribute("activeTab", "return-requests");
+
         if (customer == null) {
-            model.addAttribute("activeTab", "return-requests");
-            
             model.addAttribute("errorMessage", "Không tìm thấy khách hàng.");
-            return "/manager/dashboard";
+            return "manager/dashboard";
         }
+
         List<BorrowBook> borrowBooks = borrowBookRepository.findByCustomerAndStatus(customer, "Borrowing");
         borrowBooks.forEach(b -> {
             LocalDate dueDate = b.getDeadline();
@@ -284,52 +289,66 @@ public class ManagerController {
             b.setFine(fine); // chỉ set để hiển thị UI, không cần lưu DB
         });
         model.addAttribute("borrowBooks", borrowBooks);
-        model.addAttribute("activeTab", "return-requests");
-        
-        return "/manager/dashboard";
+
+        return "manager/dashboard";
     }
 
     @PostMapping("/manager/return/confirm")
-    public String confirmReturn(@RequestParam("borrowId") String borrowId, Model model, User user) {
+    public String confirmReturn(
+            @SessionAttribute(name = "user", required = false) User user,
+            @RequestParam("borrowId") String borrowId,
+            Model model) {
+
+        if (user == null || !"manager".equalsIgnoreCase(user.getRole())) {
+            return "redirect:/login";
+        }
+
+        model.addAttribute("user", user);
+        model.addAttribute("activeTab", "return-requests");
 
         BorrowBook b = borrowBookRepository.findById(borrowId).orElse(null);
 
-        if (b != null) {
-            LocalDate dueDate = b.getDeadline();
-            LocalDate today = LocalDate.now();
-            long daysLate = ChronoUnit.DAYS.between(dueDate, today);
-
-            double fine = daysLate > 0 ? daysLate * 5000 : 0;
-
-            b.setFine(fine);
-            b.setReturnDate(today);
-            b.setStatus("Returned");
-            borrowBookRepository.save(b);
-            Book book = b.getBook();
-            book.setQuantity(book.getQuantity() + 1);
-            bookRepository.save(book);
+        if (b == null) {
+            model.addAttribute("errorMessage", "Không tìm thấy phiếu mượn.");
+            return "manager/dashboard";
         }
+
+        LocalDate dueDate = b.getDeadline();
+        LocalDate today = LocalDate.now();
+        long daysLate = ChronoUnit.DAYS.between(dueDate, today);
+
+        double fine = daysLate > 0 ? daysLate * 5000 : 0;
+
+        b.setFine(fine);
+        b.setReturnDate(today);
+        b.setStatus("Returned");
+        borrowBookRepository.save(b);
+
+        Book book = b.getBook();
+        book.setQuantity(book.getQuantity() + 1);
+        bookRepository.save(book);
+
         Customer customer = b.getCustomer();
         model.addAttribute("customer", customer);
+
         if (customer == null) {
-            model.addAttribute("activeTab", "return-requests");
             model.addAttribute("errorMessage", "Không tìm thấy khách hàng.");
-            return "/manager/dashboard";
+            return "manager/dashboard";
         }
+
         List<BorrowBook> borrowBooks = borrowBookRepository.findByCustomerAndStatus(customer, "Borrowing");
         borrowBooks.forEach(a -> {
-            LocalDate dueDate = a.getDeadline();
-            LocalDate today = LocalDate.now();
-            long daysLate = ChronoUnit.DAYS.between(dueDate, today);
+            LocalDate d = a.getDeadline();
+            LocalDate t = LocalDate.now();
+            long late = ChronoUnit.DAYS.between(d, t);
 
-            double fine = daysLate > 0 ? daysLate * 5000 : 0;
+            double f = late > 0 ? late * 5000 : 0;
 
-            a.setFine(fine); // chỉ set để hiển thị UI, không cần lưu DB
+            a.setFine(f); // chỉ set để hiển thị UI, không cần lưu DB
         });
         model.addAttribute("borrowBooks", borrowBooks);
-        model.addAttribute("activeTab", "return-requests");
-        model.addAttribute("user", user);
-        return "/manager/dashboard";
+
+        return "manager/dashboard";
     }
 
 }

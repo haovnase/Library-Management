@@ -290,7 +290,17 @@ public class AdminController {
     // =========================
 
     @PostMapping("/users/lock")
-    public String lockUser(@RequestParam String id) {
+    public String lockUser(@RequestParam String id, HttpSession session) {
+
+        User currentUser = (User) session.getAttribute("user");
+
+        if (currentUser == null) {
+            return "redirect:/login";
+        }
+
+        if (!currentUser.getRole().equalsIgnoreCase("admin")) {
+            return "redirect:/";
+        }
 
         User user = userService.findById(id);
 
@@ -309,7 +319,17 @@ public class AdminController {
     // =========================
 
     @PostMapping("/users/unlock")
-    public String unlockUser(@RequestParam String id) {
+    public String unlockUser(@RequestParam String id, HttpSession session) {
+
+        User currentUser = (User) session.getAttribute("user");
+
+        if (currentUser == null) {
+            return "redirect:/login";
+        }
+
+        if (!currentUser.getRole().equalsIgnoreCase("admin")) {
+            return "redirect:/";
+        }
 
         User user = userService.findById(id);
 
@@ -329,7 +349,18 @@ public class AdminController {
 
     @PostMapping("/users/change-role")
     public String changeRole(@RequestParam String id,
-                             @RequestParam String role) {
+                             @RequestParam String role,
+                             HttpSession session) {
+
+        User currentUser = (User) session.getAttribute("user");
+
+        if (currentUser == null) {
+            return "redirect:/login";
+        }
+
+        if (!currentUser.getRole().equalsIgnoreCase("admin")) {
+            return "redirect:/";
+        }
 
         User user = userService.findById(id);
 
@@ -348,7 +379,17 @@ public class AdminController {
     // =========================
 
     @PostMapping("/users/delete")
-    public String deleteUser(@RequestParam String id) {
+    public String deleteUser(@RequestParam String id, HttpSession session) {
+
+        User currentUser = (User) session.getAttribute("user");
+
+        if (currentUser == null) {
+            return "redirect:/login";
+        }
+
+        if (!currentUser.getRole().equalsIgnoreCase("admin")) {
+            return "redirect:/";
+        }
 
         User user = userService.findById(id);
 
