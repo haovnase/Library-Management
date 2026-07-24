@@ -30,7 +30,7 @@ public class Book {
     @Column(name = "Quantity")
     private Integer quantity;
 
-    @Column(name = "Description")
+    @Column(name = "Description", length = 255)
     private String description;
 
     @Column(name = "Author")

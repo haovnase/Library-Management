@@ -127,6 +127,8 @@ public class ManagerController {
 
         if (description == null || description.trim().isEmpty()) {
             errorMessage.append("Tóm tắt nội dung không được để trống. ");
+        } else if (description.trim().length() > 255) {
+            errorMessage.append("Tóm tắt nội dung không được vượt quá 255 ký tự. ");
         }
 
         if (errorMessage.length() > 0) {
