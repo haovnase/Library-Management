@@ -32,7 +32,8 @@ import java.util.List;
         "booksBorrowing",
         "overdueBooks",
         "newBooksThisMonth",
-        "borrow"
+        "borrow",
+        "preOrderBooks"
 })
 public class ManagerController {
 
@@ -64,6 +65,7 @@ public class ManagerController {
         model.addAttribute("booksBorrowing", borrowBookRepository.countByStatus("Borrowing"));
         model.addAttribute("overdueBooks", borrowBookRepository.countByStatusAndDeadlineBefore("Borrowing", LocalDate.now()));
         model.addAttribute("newBooksThisMonth", 34);
+        model.addAttribute("preOrderBooks", preOrderBookService.findAll());
         List<BorrowBook> borrowBooks =
                 borrowBookRepository.findTop10ByOrderByBorrowDateDesc();
 
@@ -353,8 +355,8 @@ public class ManagerController {
 
     //xem danh sách đặt trước
 
-    @GetMapping("/manager/preorder")
-    public String getPreOrderBooks(
+    @GetMapping("/manager/dashboard/preorder")
+    public String preorderTab(
             @SessionAttribute(name = "user", required = false) User user,
             Model model) {
 
@@ -362,15 +364,13 @@ public class ManagerController {
             return "redirect:/login";
         }
 
-        model.addAttribute(
-                "preOrderBooks",
-                preOrderBookService.findAll()
-        );
+        model.addAttribute("preOrderBooks", preOrderBookService.findAll());
         model.addAttribute("user", user);
 
-        return "manager/preorder";
-    }
+        model.addAttribute("activeTab", "preorder");
 
+        return "manager/dashboard";
+    }
     // chuyển đơn sang Ready
 
     @PostMapping("/manager/preorder/ready")
@@ -390,7 +390,7 @@ public class ManagerController {
             preOrderBookService.save(preOrderBook);
         }
 
-        return "redirect:/manager/preorder";
+        return "redirect:/manager/dashboard/preorder";
     }
 
     // chuyển đơn sang complete
@@ -412,7 +412,7 @@ public class ManagerController {
             preOrderBookService.save(preOrderBook);
         }
 
-        return "redirect:/manager/preorder";
+        return "redirect:/manager/dashboard/preorder";
     }
 
     // hủy đơn(Cancel)
@@ -436,7 +436,7 @@ public class ManagerController {
             preOrderBookService.save(preOrderBook);
         }
 
-        return "redirect:/manager/preorder";
+        return "redirect:/manager/dashboard/preorder";
     }
 
 }
