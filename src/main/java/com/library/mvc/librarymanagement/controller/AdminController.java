@@ -1,6 +1,6 @@
 package com.library.mvc.librarymanagement.controller;
 
-import com.library.mvc.librarymanagement.dto.UserDTO;
+import com.library.mvc.librarymanagement.DTO.UserDTO;
 import com.library.mvc.librarymanagement.entity.User;
 import com.library.mvc.librarymanagement.service.UserService;
 

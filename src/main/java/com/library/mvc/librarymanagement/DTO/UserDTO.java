@@ -1,4 +1,4 @@
-package com.library.mvc.librarymanagement.dto;
+package com.library.mvc.librarymanagement.DTO;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
