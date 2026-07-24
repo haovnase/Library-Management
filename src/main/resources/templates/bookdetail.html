@@ -82,7 +82,7 @@
                             Có sẵn tại thư viện
                         </span>
 
-                        <form th:if="${(book.quantity == null or book.quantity <= 0)
+                        <form th:if="${(book.quantity == null or book.quantity > 0)
                                       and user != null
                                       and #strings.equalsIgnoreCase(user.role, 'customer')}"
                               th:action="@{/book/preorder}"
